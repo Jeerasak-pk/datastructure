@@ -1,0 +1,2992 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>DS Lab – ห้องจำลองโครงสร้างข้อมูล</title>
+    <style>
+      :root {
+        --bg: #f6f7fb;
+        --card: #fff;
+        --tx: #1b1f2a;
+        --mu: #6b7280;
+        --ac: #4f46e5;
+        --ac2: #10b981;
+        --hl: #f59e0b;
+        --bd: #e5e7eb;
+        color-scheme: light;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0f1220;
+          --card: #181c2e;
+          --tx: #e8eaf3;
+          --mu: #98a0b8;
+          --ac: #818cf8;
+          --ac2: #34d399;
+          --hl: #fbbf24;
+          --bd: #2a3047;
+          color-scheme: dark;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0f1220;
+        --card: #181c2e;
+        --tx: #e8eaf3;
+        --mu: #98a0b8;
+        --ac: #818cf8;
+        --ac2: #34d399;
+        --hl: #fbbf24;
+        --bd: #2a3047;
+        color-scheme: dark;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--tx);
+        font:
+          16px/1.6 system-ui,
+          -apple-system,
+          "Segoe UI",
+          Roboto,
+          "Noto Sans Thai",
+          Sarabun,
+          sans-serif;
+      }
+      .app {
+        display: flex;
+        align-items: flex-start;
+      }
+      aside {
+        width: 256px;
+        flex: none;
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        padding: 20px 14px;
+        border-right: 1px solid var(--bd);
+        min-height: 100vh;
+        max-height: 100vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .gh {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--mu);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 10px 0 0;
+      }
+      aside h1 {
+        font-size: 20px;
+        margin: 0;
+      }
+      #prog {
+        color: var(--mu);
+        font-size: 13px;
+      }
+      #nav {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      button {
+        font: inherit;
+        cursor: pointer;
+        border: 1px solid var(--bd);
+        background: var(--card);
+        color: var(--tx);
+        border-radius: 10px;
+        padding: 8px 14px;
+        transition:
+          transform 0.15s,
+          background 0.2s,
+          border-color 0.2s;
+      }
+      button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        border-color: var(--ac);
+      }
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .nv {
+        text-align: left;
+        display: flex;
+        justify-content: space-between;
+        gap: 6px;
+        font-size: 14px;
+        padding: 7px 12px;
+      }
+      .nv.on {
+        background: var(--ac);
+        color: #fff;
+        border-color: var(--ac);
+      }
+      .nv i {
+        font-style: normal;
+        color: var(--ac2);
+      }
+      .nv.on i {
+        color: #fff;
+      }
+      main {
+        flex: 1;
+        min-width: 0;
+        padding: 24px;
+        max-width: 900px;
+      }
+      .hd {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .hd h2 {
+        margin: 0;
+      }
+      #dn.ok {
+        background: var(--ac2);
+        color: #fff;
+        border-color: var(--ac2);
+      }
+      .tabs {
+        display: flex;
+        gap: 6px;
+        margin: 16px 0;
+        overflow-x: auto;
+      }
+      .tabs button {
+        white-space: nowrap;
+        flex: none;
+      }
+      .tabs button.on {
+        border-color: var(--ac);
+        color: var(--ac);
+        font-weight: 600;
+      }
+      .pn {
+        background: var(--card);
+        border: 1px solid var(--bd);
+        border-radius: 16px;
+        padding: 20px;
+        animation: fade 0.35s;
+      }
+      @keyframes fade {
+        from {
+          opacity: 0;
+          transform: translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 420px;
+      }
+      td,
+      th {
+        border-bottom: 1px solid var(--bd);
+        padding: 6px 10px;
+        text-align: left;
+      }
+      td:last-child {
+        color: var(--ac);
+        font-weight: 600;
+      }
+      h3 {
+        margin: 18px 0 4px;
+      }
+      pre {
+        background: var(--bg);
+        padding: 14px;
+        border-radius: 12px;
+        overflow-x: auto;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .ctl {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+      }
+      .ctl #val {
+        width: 104px;
+        padding: 8px;
+        border-radius: 10px;
+        border: 1px solid var(--bd);
+        background: var(--bg);
+        color: var(--tx);
+        font: inherit;
+      }
+      .ghost {
+        background: transparent;
+      }
+      .sp {
+        margin: 10px 0;
+        color: var(--mu);
+        font-size: 14px;
+      }
+      .stage {
+        min-height: 340px;
+        margin: 12px 0;
+        border-radius: 12px;
+        background: var(--bg);
+        padding: 16px;
+        display: flex;
+        overflow: auto;
+      }
+      .stage > * {
+        margin: auto;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .stack .row {
+        flex-direction: column-reverse;
+        align-items: stretch;
+      }
+      .cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+      }
+      .stack .cell {
+        flex-direction: row;
+        gap: 10px;
+      }
+      .cell small {
+        color: var(--mu);
+        font-size: 11px;
+        font-weight: 600;
+        min-height: 14px;
+        white-space: nowrap;
+      }
+      .node {
+        min-width: 52px;
+        height: 46px;
+        display: grid;
+        place-items: center;
+        padding: 0 10px;
+        border: 2px solid var(--ac);
+        border-radius: 10px;
+        background: var(--card);
+        font-weight: 700;
+        transition:
+          background 0.25s,
+          transform 0.25s;
+      }
+      .node.hi {
+        background: var(--hl);
+        color: #111;
+        transform: scale(1.12);
+      }
+      .node.pop {
+        animation: pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1);
+      }
+      .node.out {
+        animation: out 0.35s forwards;
+      }
+      @keyframes pop {
+        from {
+          transform: scale(0.2);
+          opacity: 0;
+        }
+        to {
+          transform: none;
+          opacity: 1;
+        }
+      }
+      @keyframes out {
+        to {
+          transform: translateY(-18px) scale(0.2);
+          opacity: 0;
+        }
+      }
+      .arr {
+        color: var(--mu);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+      .node.ok {
+        background: var(--ac2);
+        color: #fff;
+        border-color: var(--ac2);
+      }
+      .node.emp {
+        opacity: 0.35;
+        border-style: dashed;
+      }
+      .bars {
+        display: flex;
+        align-items: flex-end;
+        gap: 5px;
+        height: 220px;
+      }
+      .bar {
+        width: 30px;
+        border-radius: 6px 6px 0 0;
+        background: var(--ac);
+        color: #fff;
+        text-align: center;
+        font-size: 12px;
+        padding-top: 2px;
+        transition:
+          height 0.3s,
+          background 0.2s;
+      }
+      .bar.hi {
+        background: var(--hl);
+        color: #111;
+      }
+      .bar.ok {
+        background: var(--ac2);
+      }
+      .hb {
+        width: 100%;
+        max-width: 560px;
+      }
+      .hr {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 6px 0;
+      }
+      .hr span {
+        width: 84px;
+        font-size: 13px;
+      }
+      .hr b {
+        font-size: 13px;
+        min-width: 60px;
+      }
+      .hf {
+        height: 18px;
+        border-radius: 6px;
+        background: var(--ac);
+        animation: grow 0.6s;
+      }
+      @keyframes grow {
+        from {
+          width: 0;
+        }
+      }
+      .dl {
+        fill: var(--ac);
+        font-size: 12px;
+        font-weight: 700;
+        text-anchor: middle;
+        paint-order: stroke;
+        stroke: var(--bg);
+        stroke-width: 4px;
+        stroke-linejoin: round;
+      }
+      .empty {
+        color: var(--mu);
+      }
+      .tn circle {
+        fill: var(--card);
+        stroke: var(--ac);
+        stroke-width: 2;
+        transition: fill 0.25s;
+      }
+      .tn.hi circle {
+        fill: var(--hl);
+      }
+      .tn.ok circle {
+        fill: var(--ac2);
+      }
+      .tn.pop {
+        animation: pop 0.45s;
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+      .tn text {
+        fill: var(--tx);
+        text-anchor: middle;
+        font-weight: 700;
+        font-size: 14px;
+      }
+      .tn.hi text {
+        fill: #111;
+      }
+      svg line {
+        stroke: var(--mu);
+        stroke-width: 2;
+      }
+      .cap {
+        color: var(--tx);
+        font-weight: 600;
+        font-size: 16px;
+        min-height: 26px;
+        margin: 8px 0 0;
+      }
+      .what {
+        background: var(--bg);
+        border-left: 4px solid var(--ac);
+        border-radius: 10px;
+        padding: 12px 16px;
+        margin-bottom: 6px;
+      }
+      .what p {
+        margin: 6px 0 0;
+      }
+      .sp {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+      .sp label {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+      }
+      .log {
+        font-size: 13px;
+        color: var(--mu);
+        max-height: 150px;
+        overflow: auto;
+        border-top: 1px solid var(--bd);
+        margin-top: 8px;
+        padding-top: 6px;
+      }
+      .log div {
+        padding: 2px 0;
+      }
+      .log:not(:empty)::before {
+        content: "ขั้นตอนก่อนหน้า";
+        display: block;
+        font-size: 11px;
+        font-weight: 700;
+        margin-bottom: 2px;
+      }
+      .q {
+        margin-bottom: 16px;
+      }
+      .opts {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .opts .ok {
+        background: var(--ac2);
+        color: #fff;
+        border-color: var(--ac2);
+      }
+      .opts .bad {
+        background: #ef4444;
+        color: #fff;
+        border-color: #ef4444;
+      }
+      @media (max-width: 760px) {
+        .gh {
+          display: none;
+        }
+        .app {
+          flex-direction: column;
+        }
+        aside {
+          max-height: none;
+          position: static;
+          width: 100%;
+          min-height: 0;
+          border-right: 0;
+          border-bottom: 1px solid var(--bd);
+        }
+        #nav {
+          flex-direction: row;
+          overflow-x: auto;
+        }
+        .nv {
+          white-space: nowrap;
+          gap: 8px;
+        }
+        main {
+          padding: 16px;
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <aside>
+        <h1>🧪 DS Lab</h1>
+        <div style="font-size: 12px; color: var(--mu)">
+          ห้องทดลองจำลองโครงสร้างข้อมูล
+        </div>
+        <div id="prog"></div>
+        <nav id="nav"></nav>
+        <button id="th" class="ghost">🌓 ธีม</button>
+      </aside>
+      <main id="main"></main>
+    </div>
+    <script>
+      const $ = (s) => document.querySelector(s);
+      const ld = (k, d) => {
+        try {
+          const v = JSON.parse(localStorage.getItem(k));
+          return v == null ? d : v;
+        } catch (e) {
+          return d;
+        }
+      };
+      const sv = (k, v) => {
+        try {
+          localStorage.setItem(k, JSON.stringify(v));
+        } catch (e) {}
+      };
+      const esc = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+      let done = ld("dsl", []),
+        cur = "stack",
+        tab = "viz",
+        busy = false,
+        sp = 6,
+        qa = {};
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+      let paused = false,
+        stepMode = false,
+        stepRes = null;
+      const gate = async (ms) => {
+        if (stepMode) {
+          await new Promise((r) => {
+            stepRes = r;
+          });
+          return;
+        }
+        await wait(ms);
+        while (paused) await wait(120);
+      };
+      const delay = () => gate(1500 - sp * 130);
+      const say = (t) => {
+        const c = $("#cap"),
+          L = $("#log");
+        if (c) {
+          if (c.dataset.s && L) {
+            const d = document.createElement("div");
+            d.textContent = c.textContent;
+            L.prepend(d);
+            while (L.children.length > 8) L.lastChild.remove();
+          }
+          c.textContent = t;
+          c.dataset.s = 1;
+        }
+      };
+      const th = ld("dst", null);
+      if (th) document.documentElement.dataset.theme = th;
+      $("#th").onclick = () => {
+        const d = document.documentElement;
+        const dark = d.dataset.theme
+          ? d.dataset.theme === "dark"
+          : matchMedia("(prefers-color-scheme:dark)").matches;
+        d.dataset.theme = dark ? "light" : "dark";
+        sv("dst", d.dataset.theme);
+      };
+
+      const T = {
+        stack: {
+          n: "สแตก (Stack)",
+          what: "สแตกคือโครงสร้างข้อมูลที่เก็บข้อมูลซ้อนกันเป็นชั้น ๆ เหมือนกองจานในร้านอาหาร ใส่จานใหม่ได้เฉพาะบนสุด และหยิบออกได้เฉพาะจานบนสุดเท่านั้น จึงได้ตัวที่ใส่เข้าไปล่าสุดออกมาก่อนเสมอ",
+          ic: "📚",
+          learn:
+            "สแตกทำงานแบบ LIFO — Last In, First Out (เข้าทีหลังออกก่อน) เหมือนกองจาน คือเพิ่มหรือเอาออกได้เฉพาะที่บนสุดเท่านั้น",
+          cx: [
+            ["Push", "O(1)"],
+            ["Pop", "O(1)"],
+            ["Peek", "O(1)"],
+            ["ค้นหา", "O(n)"],
+          ],
+          uses: "Undo/Redo, ปุ่มย้อนกลับของเบราว์เซอร์, call stack ของฟังก์ชัน, ตรวจวงเล็บให้ตรงกัน",
+          code: `class Stack {
+  constructor() { this.items = []; }
+  push(x) { this.items.push(x); }
+  pop()   { return this.items.pop(); }
+  peek()  { return this.items[this.items.length - 1]; }
+  isEmpty() { return this.items.length === 0; }
+}`,
+          quiz: [
+            [
+              "สแตกทำงานตามลำดับแบบใด?",
+              ["FIFO", "LIFO", "เรียงลำดับ", "สุ่ม"],
+              1,
+            ],
+            [
+              "ความซับซ้อนเวลาของ push คือ?",
+              ["O(1)", "O(n)", "O(log n)", "O(n²)"],
+              0,
+            ],
+          ],
+        },
+        queue: {
+          n: "คิว (Queue)",
+          what: "คิวคือโครงสร้างข้อมูลที่เก็บข้อมูลเรียงเป็นแถวเหมือนคนต่อคิวซื้อของ คนที่มาถึงก่อนจะได้รับบริการก่อน ส่วนคนมาใหม่ต้องไปต่อท้ายแถว",
+          ic: "🚶",
+          learn:
+            "คิวทำงานแบบ FIFO — First In, First Out (เข้าก่อนออกก่อน) เหมือนต่อแถวซื้อของ คือเข้าต่อที่ท้ายแถว (rear) และออกจากหน้าแถว (front)",
+          cx: [
+            ["Enqueue", "O(1)"],
+            ["Dequeue", "O(1)"],
+            ["Peek", "O(1)"],
+            ["ค้นหา", "O(n)"],
+          ],
+          uses: "คิวงานเครื่องพิมพ์, การจัดตารางงานของ OS, BFS ในกราฟ, บัฟเฟอร์ข้อความ",
+          code: `class Queue {
+  constructor() { this.items = []; }
+  enqueue(x) { this.items.push(x); }
+  dequeue()  { return this.items.shift(); }
+  front()    { return this.items[0]; }
+}`,
+          quiz: [
+            [
+              "การ dequeue ทำที่ปลายด้านไหน?",
+              ["ท้ายคิว (Rear)", "หน้าคิว (Front)", "ตรงกลาง", "ด้านไหนก็ได้"],
+              1,
+            ],
+            [
+              "คิวงานของเครื่องพิมพ์เป็นตัวอย่างของ…",
+              ["LIFO", "FIFO", "Heap", "Tree"],
+              1,
+            ],
+          ],
+        },
+        list: {
+          n: "ลิงก์ลิสต์ (Linked List)",
+          what: "ลิงก์ลิสต์คือโครงสร้างข้อมูลที่ไม่ได้เก็บข้อมูลติดกันในหน่วยความจำ แต่ให้แต่ละชิ้นข้อมูล (โหนด) จำว่าชิ้นถัดไปอยู่ที่ไหน เหมือนเกมล่าสมบัติที่แต่ละจุดมีเบาะแสบอกจุดต่อไป จึงเพิ่มหรือลบข้อมูลได้ง่ายโดยไม่ต้องขยับข้อมูลอื่น แต่จะกระโดดไปยังตำแหน่งที่ต้องการทันทีไม่ได้",
+          ic: "🔗",
+          learn:
+            "ลิงก์ลิสต์คือโหนดที่ต่อกันเป็นสายโซ่ แต่ละโหนดเก็บค่าและพอยน์เตอร์ชี้ไปโหนดถัดไป โหนดแรกคือ HEAD และโหนดสุดท้ายชี้ไป null",
+          cx: [
+            ["แทรกที่ head", "O(1)"],
+            ["แทรกที่ tail*", "O(n)"],
+            ["ค้นหา", "O(n)"],
+            ["ลบ", "O(n)"],
+          ],
+          uses: "เพลย์ลิสต์เพลง, ประวัติ undo, ตัวจัดสรรหน่วยความจำ, ใช้สร้างสแตกและคิว (*เป็น O(1) ถ้าเก็บพอยน์เตอร์ tail ไว้)",
+          code: `class Node {
+  constructor(val) { this.val = val; this.next = null; }
+}
+class LinkedList {
+  constructor() { this.head = null; }
+  addHead(v) { const n = new Node(v); n.next = this.head; this.head = n; }
+  addTail(v) {
+    const n = new Node(v);
+    if (!this.head) { this.head = n; return; }
+    let c = this.head;
+    while (c.next) c = c.next;
+    c.next = n;
+  }
+}`,
+          quiz: [
+            [
+              "การอ่านโหนดที่ k ของ singly linked list ใช้เวลา…",
+              ["O(1)", "O(n)", "O(log n)", "O(n²)"],
+              1,
+            ],
+            [
+              "การแทรกที่ head ใช้เวลา…",
+              ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+              0,
+            ],
+          ],
+        },
+        bst: {
+          n: "ต้นไม้ค้นหาแบบไบนารี (BST)",
+          what: "BST คือต้นไม้ที่จัดข้อมูลให้ค้นหาได้เร็ว เหมือนเกมทายเลขที่ถามว่า มากกว่าหรือน้อยกว่า แล้วตัดตัวเลือกทิ้งครึ่งหนึ่งทุกครั้ง โดยค่าน้อยจะอยู่ทางซ้ายและค่ามากอยู่ทางขวาของทุกโหนด",
+          ic: "🌳",
+          learn:
+            "ใน BST แต่ละโหนดมีลูกได้ไม่เกินสองตัว ค่าที่น้อยกว่าไปทางซ้าย ค่าที่มากกว่าไปทางขวา ทำให้แต่ละขั้นตัดพื้นที่ค้นหาลงครึ่งหนึ่ง",
+          cx: [
+            ["ค้นหา (เฉลี่ย)", "O(log n)"],
+            ["แทรก (เฉลี่ย)", "O(log n)"],
+            ["กรณีแย่ที่สุด", "O(n)"],
+            ["เดินแบบ In-order", "O(n)"],
+          ],
+          uses: "ข้อมูลที่เรียงลำดับ, dictionary, range query, ดัชนีฐานข้อมูล (แบบที่สมดุล)",
+          code: `class TreeNode {
+  constructor(v) { this.v = v; this.l = null; this.r = null; }
+}
+function insert(root, v) {
+  if (!root) return new TreeNode(v);
+  if (v < root.v) root.l = insert(root.l, v);
+  else if (v > root.v) root.r = insert(root.r, v);
+  return root;
+}
+function inorder(n, out = []) {
+  if (n) { inorder(n.l, out); out.push(n.v); inorder(n.r, out); }
+  return out;
+}`,
+          quiz: [
+            [
+              "การเดินแบบ In-order ของ BST ให้ผลเป็น…",
+              [
+                "ลำดับสุ่ม",
+                "เรียงจากน้อยไปมาก",
+                "ย้อนลำดับการแทรก",
+                "ทีละระดับ",
+              ],
+              1,
+            ],
+            [
+              "เวลาค้นหาเฉลี่ยของ BST ที่สมดุลคือ?",
+              ["O(1)", "O(log n)", "O(n)", "O(n²)"],
+              1,
+            ],
+          ],
+        },
+        bigo: {
+          n: "ความซับซ้อน (Big-O)",
+          what: "Big-O คือวิธีวัดว่าโปรแกรมจะช้าลง (หรือใช้หน่วยความจำเพิ่ม) แค่ไหนเมื่อข้อมูลมากขึ้น ไม่ได้วัดเป็นวินาที แต่ดูแนวโน้มการเติบโต เหมือนเปรียบเทียบว่าเดินเคาะประตูหาเพื่อนทีละบ้าน กับเปิดสมุดโทรศัพท์ วิธีไหนยังไหวเมื่อมีคนเป็นล้าน",
+          ic: "⏱️",
+          learn:
+            "Big-O บอกว่าเวลาหรือหน่วยความจำโตขึ้นอย่างไรเมื่อขนาดข้อมูล n เพิ่ม โดยไม่สนค่าคงที่ เรียงจากโตช้าสุดไปเร็วสุด: O(1), O(log n), O(n), O(n log n), O(n²), O(2ⁿ) ส่วน Big-Ω คือขอบล่าง และ Big-Θ คือขอบที่แน่นพอดี ควรพิจารณากรณีดีสุด เฉลี่ย แย่สุด และต้นทุนเฉลี่ยแบบ amortized (เช่น append ของ dynamic array เป็น O(1) amortized)",
+          cx: [
+            ["Binary search", "O(log n)"],
+            ["สแกนเชิงเส้น", "O(n)"],
+            ["Merge sort", "O(n log n)"],
+            ["ลูปซ้อนลูป", "O(n²)"],
+          ],
+          uses: "เปรียบเทียบอัลกอริทึม, ประเมินว่าโค้ดรับข้อมูลที่เพิ่มขึ้นได้แค่ไหน, เลือกโครงสร้างข้อมูลที่เหมาะสม",
+          code: `// O(1): one step
+const first = a[0];
+// O(n): one loop
+for (const x of a) sum += x;
+// O(n^2): nested loops
+for (const x of a) for (const y of a) pairs++;
+// O(log n): halve each step
+while (n > 1) n = Math.floor(n / 2);`,
+          quiz: [
+            [
+              "Big-Θ หมายถึง…",
+              [
+                "ขอบบนอย่างเดียว",
+                "ขอบล่างอย่างเดียว",
+                "ขอบที่แน่นพอดี",
+                "กรณีเฉลี่ย",
+              ],
+              2,
+            ],
+            ["ข้อใดโตเร็วที่สุด?", ["O(n log n)", "O(n²)", "O(2ⁿ)", "O(n)"], 2],
+          ],
+        },
+        array: {
+          n: "อาร์เรย์และ Dynamic Array",
+          what: "อาร์เรย์คือโครงสร้างข้อมูลที่เก็บข้อมูลเรียงติดกันเป็นช่อง ๆ ในหน่วยความจำ เหมือนตู้ล็อกเกอร์ที่มีเลขกำกับ รู้เลขช่องก็เปิดดูได้ทันที ส่วน dynamic array คืออาร์เรย์ที่ขยายขนาดเองได้เมื่อเต็ม",
+          ic: "🔢",
+          learn:
+            "สมาชิกอยู่ติดกันในหน่วยความจำ จึงคำนวณที่อยู่ได้ด้วย base + i × size ทำให้เข้าถึงสมาชิกตัวใดก็ได้ทันทีใน O(1) และใช้ประโยชน์จากแคชของ CPU ได้ดี การแทรกหรือลบตรงกลางต้องเลื่อนสมาชิก (O(n)) ส่วน dynamic array (vector, ArrayList) จะขยายความจุเป็นสองเท่าเมื่อเต็ม ทำให้ append เป็น O(1) amortized อาร์เรย์หลายมิติเก็บแบบ row-major (C) หรือ column-major (Fortran)",
+          cx: [
+            ["เข้าถึงด้วย index", "O(1)"],
+            ["Append (amortized)", "O(1)"],
+            ["แทรก/ลบตรงกลาง", "O(n)"],
+            ["ค้นหา (ไม่เรียง)", "O(n)"],
+          ],
+          uses: "ตารางค้นหา, บัฟเฟอร์, เมทริกซ์, โครงเก็บข้อมูลของสแตก คิว และฮีป",
+          code: `// address of a[i] = base + i * elementSize
+class DynArray {
+  constructor() { this.data = new Array(2); this.size = 0; }
+  push(x) {
+    if (this.size === this.data.length) {
+      const bigger = new Array(this.size * 2); // double capacity
+      for (let i = 0; i < this.size; i++) bigger[i] = this.data[i];
+      this.data = bigger;
+    }
+    this.data[this.size++] = x;
+  }
+}`,
+          quiz: [
+            [
+              "ทำไมการเข้าถึงอาร์เรย์จึงเป็น O(1)?",
+              [
+                "ใช้ Binary search",
+                "ที่อยู่ = base + i × size",
+                "ใช้แฮช",
+                "ใช้พอยน์เตอร์",
+              ],
+              1,
+            ],
+            [
+              "append ของ dynamic array เป็น…",
+              ["O(1) amortized", "O(n) เสมอ", "O(log n)", "O(n²)"],
+              0,
+            ],
+          ],
+        },
+        hash: {
+          n: "ตารางแฮช (Hash Table)",
+          what: "ตารางแฮชคือโครงสร้างข้อมูลที่ใช้สูตรคำนวณ (ฟังก์ชันแฮช) เปลี่ยนคีย์เป็นเลขช่อง เหมือนการจัดตู้เอกสารตามตัวอักษรแรกของชื่อ ทำให้ค้นหา เพิ่ม และลบได้เร็วมากโดยเฉลี่ย เป็นพื้นฐานของ dictionary หรือ map ในภาษาโปรแกรมต่าง ๆ",
+          ic: "#️⃣",
+          learn:
+            "ฟังก์ชันแฮชแปลงคีย์เป็น index โดยหวังให้กระจายคีย์ทั่วถึง เมื่อเกิด collision (สองคีย์ได้ index เดียวกัน) แก้ได้ด้วย chaining (ต่อลิสต์ในแต่ละ bucket) หรือ open addressing (linear probing, quadratic probing, double hashing) ค่า load factor α = n / m ควบคุมความเร็ว เมื่อ α สูงจะขยายตารางและ rehash ทุกคีย์ใหม่",
+          cx: [
+            ["ค้นหา (เฉลี่ย)", "O(1)"],
+            ["แทรก (เฉลี่ย)", "O(1)"],
+            ["กรณีแย่ที่สุด", "O(n)"],
+            ["ขยายตาราง", "O(n)"],
+          ],
+          uses: "Dictionary/Map, Set, แคช, symbol table ของคอมไพเลอร์, การตัดข้อมูลซ้ำ",
+          code: `class HashTable {
+  constructor(m = 8) { this.b = Array.from({ length: m }, () => []); }
+  hash(k) { let h = 0; for (const c of String(k)) h = (h * 31 + c.charCodeAt(0)) % this.b.length; return h; }
+  set(k, v) { const bk = this.b[this.hash(k)]; const e = bk.find(p => p[0] === k); e ? (e[1] = v) : bk.push([k, v]); }
+  get(k) { const e = this.b[this.hash(k)].find(p => p[0] === k); return e && e[1]; }
+}`,
+          quiz: [
+            [
+              "collision คืออะไร?",
+              [
+                "ตารางเต็ม",
+                "สองคีย์ถูกแมปไปที่ index เดียวกัน",
+                "ไม่พบคีย์",
+                "การขยายตาราง",
+              ],
+              1,
+            ],
+            ["load factor คือ…", ["n / m", "m / n", "n × m", "log n"], 0],
+          ],
+        },
+        heap: {
+          n: "ฮีปและ Priority Queue",
+          what: "ฮีปคือต้นไม้ที่จัดให้ค่าที่ต้องการที่สุด (น้อยสุดหรือมากสุด) อยู่บนยอดเสมอ เหมือนห้องฉุกเฉินที่รักษาผู้ป่วยอาการหนักก่อน ไม่ใช่ตามลำดับที่มาถึง จึงใช้ทำ priority queue (คิวที่มีลำดับความสำคัญ)",
+          ic: "⛰️",
+          learn:
+            "Binary heap คือต้นไม้ไบนารีแบบสมบูรณ์ที่เก็บในอาร์เรย์ โดย parent เล็กกว่า child เสมอ (min-heap) หรือใหญ่กว่าเสมอ (max-heap) สำหรับ index i: parent = ⌊(i−1)/2⌋, child = 2i+1 และ 2i+2 การแทรกใช้ sift up การดึงออกใช้ sift down การสร้างฮีปจาก n ตัวใช้แค่ O(n) ฮีปเป็นหัวใจของ priority queue และ heapsort",
+          cx: [
+            ["ดูค่าน้อย/มากสุด", "O(1)"],
+            ["แทรก", "O(log n)"],
+            ["ดึงออก", "O(log n)"],
+            ["สร้างฮีป", "O(n)"],
+          ],
+          uses: "Priority queue, การจัดตารางงานของ OS, Dijkstra, heapsort, โจทย์ top-k",
+          code: `class MinHeap {
+  constructor() { this.a = []; }
+  push(x) {
+    const a = this.a; a.push(x);
+    let i = a.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (a[p] <= a[i]) break;
+      [a[p], a[i]] = [a[i], a[p]]; i = p;
+    }
+  }
+}`,
+          quiz: [
+            [
+              "parent ของ index i ในฮีปแบบอาร์เรย์คือ?",
+              ["i / 2", "⌊(i−1)/2⌋", "2i", "i + 1"],
+              1,
+            ],
+            [
+              "สร้างฮีปจากข้อมูล n ตัวใช้เวลา?",
+              ["O(n)", "O(n log n)", "O(log n)", "O(n²)"],
+              0,
+            ],
+          ],
+        },
+        avl: {
+          n: "ต้นไม้สมดุล (AVL, Red-Black)",
+          what: "ต้นไม้สมดุลคือ BST ที่คอยจัดตัวเองไม่ให้เอียงไปข้างใดข้างหนึ่งมากเกินไป เหมือนการจัดชั้นหนังสือให้สองฝั่งสูงพอ ๆ กัน เพื่อให้ค้นหาเร็วอยู่เสมอ ไม่ว่าจะใส่ข้อมูลเรียงแบบไหน",
+          ic: "⚖️",
+          learn:
+            "BST ธรรมดาอาจเสื่อมเป็นลิงก์ลิสต์ (O(n)) ต้นไม้ที่สมดุลตัวเองจึงรักษาความสูงไว้ที่ O(log n) AVL เก็บ balance factor (ความสูงซ้าย − ความสูงขวา) ให้เป็น −1, 0 หรือ 1 และแก้ด้วยการหมุน (LL, RR, LR, RL) ส่วน Red-Black tree ใช้สีของโหนดและกฎที่หลวมกว่า หมุนน้อยกว่าตอนแทรก/ลบ จึงนิยมใช้ในไลบรารี (C++ std::map, Java TreeMap)",
+          cx: [
+            ["ค้นหา", "O(log n)"],
+            ["แทรก", "O(log n)"],
+            ["ลบ", "O(log n)"],
+            ["การหมุนหนึ่งครั้ง", "O(1)"],
+          ],
+          uses: "Map/Set แบบเรียงลำดับ, ดัชนีในหน่วยความจำ, ตัวจัดตารางงาน (Linux CFS)",
+          code: `function rotateRight(y) {
+  const x = y.left;
+  y.left = x.right;
+  x.right = y;
+  y.h = 1 + Math.max(h(y.left), h(y.right));
+  x.h = 1 + Math.max(h(x.left), h(x.right));
+  return x; // new subtree root
+}
+// balance = h(left) - h(right); if it is > 1 or < -1, rotate`,
+          quiz: [
+            [
+              "balance factor ของ AVL ต้องเป็น…",
+              ["ค่าใดก็ได้", "−1, 0 หรือ 1", "0 เท่านั้น", "เป็นบวก"],
+              1,
+            ],
+            [
+              "ทำไมต้องทำให้ BST สมดุล?",
+              [
+                "ใช้หน่วยความจำน้อยลง",
+                "รักษาความสูงไว้ที่ O(log n)",
+                "แฮชเร็วขึ้น",
+                "เพื่อเรียงข้อมูล",
+              ],
+              1,
+            ],
+          ],
+        },
+        btree: {
+          n: "B-Tree และ B+ Tree",
+          what: "B-Tree คือต้นไม้ที่แต่ละโหนดเก็บคีย์ได้หลายตัว ทำให้ต้นไม้เตี้ยและกว้าง เหมือนสารบัญหนังสือที่แบ่งเป็นหมวดใหญ่และหมวดย่อย เปิดหาได้ในไม่กี่ขั้น ออกแบบมาสำหรับข้อมูลบนดิสก์ที่การอ่านแต่ละครั้งมีต้นทุนสูง และเป็นโครงสร้างหลักของดัชนีในฐานข้อมูล",
+          ic: "🗄️",
+          learn:
+            "โหนดของ B-tree เก็บได้หลายคีย์และมีลูกได้ถึง m ตัว ต้นไม้จึงเตี้ยมาก เหมาะกับสื่อเก็บข้อมูลที่การอ่านหนึ่งโหนดคือการอ่านหนึ่งเพจจากดิสก์หรือ SSD ใบทุกใบอยู่ลึกเท่ากัน โหนดที่ล้นจะแตกออก (split) และโหนดที่ว่างเกินไปจะรวมกัน (merge) ใน B+ tree ข้อมูลอยู่เฉพาะที่ใบ และใบเชื่อมต่อกัน ทำให้สแกนช่วงได้เร็ว",
+          cx: [
+            ["ค้นหา", "O(log n)"],
+            ["แทรก", "O(log n)"],
+            ["ลบ", "O(log n)"],
+            ["สแกนช่วง (B+)", "O(log n + k)"],
+          ],
+          uses: "ดัชนีฐานข้อมูล, ระบบไฟล์ (NTFS, ext4, APFS)",
+          code: `class BNode {
+  constructor(leaf) { this.keys = []; this.children = []; this.leaf = leaf; }
+}
+// order m: at most m children and m-1 keys per node
+// overflow -> split the node, push the middle key up`,
+          quiz: [
+            [
+              "ทำไมจึงใช้ B-tree บนดิสก์?",
+              [
+                "อ่านเพจน้อยลง (ต้นไม้เตี้ย)",
+                "เพราะเป็นไบนารี",
+                "ไม่ใช้หน่วยความจำ",
+                "ไม่ต้องเรียงลำดับ",
+              ],
+              0,
+            ],
+            [
+              "ใน B+ tree ข้อมูลถูกเก็บที่…",
+              ["root", "โหนดภายใน", "ใบ (leaf)", "ที่ไหนก็ได้"],
+              2,
+            ],
+          ],
+        },
+        trie: {
+          n: "Trie (ต้นไม้ prefix)",
+          what: "Trie คือต้นไม้ที่เก็บคำโดยแตกกิ่งทีละตัวอักษร คำที่ขึ้นต้นเหมือนกันจะใช้กิ่งร่วมกัน เหมือนตอนพิมพ์ค้นหาแล้วมือถือเสนอคำต่อให้ ใช้ทำ autocomplete และตรวจคำสะกดได้ดี",
+          ic: "🔤",
+          learn:
+            "แต่ละโหนดแทนหนึ่งตัวอักษร และเส้นทางจาก root สะกดเป็น prefix การแทรกและค้นหาใช้ O(L) เมื่อ L คือความยาวคำ ไม่ว่าจะเก็บกี่คำก็ตาม ใช้หน่วยความจำได้มาก แต่แบบบีบอัด (radix tree) ช่วยลดได้",
+          cx: [
+            ["แทรก", "O(L)"],
+            ["ค้นหา", "O(L)"],
+            ["ค้นด้วย prefix", "O(L)"],
+            ["พื้นที่", "O(ตัวอักษรรวม)"],
+          ],
+          uses: "Autocomplete, ตรวจตัวสะกด, การ route IP (longest prefix match), พจนานุกรม",
+          code: `class Trie {
+  constructor() { this.root = {}; }
+  insert(w) { let n = this.root; for (const c of w) n = n[c] ??= {}; n.end = true; }
+  has(w) {
+    let n = this.root;
+    for (const c of w) { n = n[c]; if (!n) return false; }
+    return !!n.end;
+  }
+}`,
+          quiz: [
+            [
+              "ค้นหาคำยาว L ตัวอักษรใน trie ใช้เวลา?",
+              ["O(L)", "O(n)", "O(log n)", "O(1)"],
+              0,
+            ],
+            [
+              "trie เหมาะกับงานใดที่สุด?",
+              [
+                "ค้นหาด้วย prefix",
+                "เรียงตัวเลข",
+                "หาเส้นทางในกราฟ",
+                "แก้ hash collision",
+              ],
+              0,
+            ],
+          ],
+        },
+        segtree: {
+          n: "Segment Tree และ Fenwick Tree",
+          what: "Segment Tree คือต้นไม้ที่เก็บผลรวม (หรือค่าน้อยสุด/มากสุด) ของแต่ละช่วงข้อมูลไว้ล่วงหน้า เหมือนการจดยอดขายรายวัน รายสัปดาห์ และรายเดือนไว้ เมื่อถามยอดรวมช่วงไหนก็รวมแค่ไม่กี่ก้อน โดยไม่ต้องบวกใหม่ทั้งหมด",
+          ic: "📏",
+          learn:
+            "Segment tree เก็บค่ารวม (sum, min, max) ของทุกช่วง การ query ช่วงหรือแก้ค่าทีละตำแหน่งใช้ O(log n) ส่วน Fenwick tree (Binary Indexed Tree) หาผลรวมสะสมได้ด้วยหน่วยความจำน้อยกว่าและโค้ดสั้นกว่า โดยใช้เทคนิคบิตต่ำสุดที่เป็น 1: i += i & −i ส่วน lazy propagation ช่วยให้ segment tree อัปเดตทั้งช่วงได้",
+          cx: [
+            ["สร้าง", "O(n)"],
+            ["Query ช่วง", "O(log n)"],
+            ["อัปเดตทีละตำแหน่ง", "O(log n)"],
+            ["พื้นที่", "O(n)"],
+          ],
+          uses: "Query ผลรวม/ค่าน้อยสุดของช่วง, การแข่งโปรแกรมมิ่ง, กราฟิก, ฐานข้อมูล",
+          code: `class Fenwick {
+  constructor(n) { this.t = new Array(n + 1).fill(0); }
+  add(i, d) { for (i++; i < this.t.length; i += i & -i) this.t[i] += d; }
+  sum(i) { let s = 0; for (i++; i > 0; i -= i & -i) s += this.t[i]; return s; } // prefix [0..i]
+}`,
+          quiz: [
+            [
+              "range query ของ segment tree ใช้เวลา?",
+              ["O(1)", "O(log n)", "O(n)", "O(n²)"],
+              1,
+            ],
+            [
+              "Fenwick tree เก็บ…",
+              [
+                "ผลรวมสะสม (prefix aggregate)",
+                "คำศัพท์",
+                "เส้นเชื่อม",
+                "คีย์แฮช",
+              ],
+              0,
+            ],
+          ],
+        },
+        graph: {
+          n: "กราฟ (BFS และ DFS)",
+          what: "กราฟคือโครงสร้างข้อมูลที่แสดงความสัมพันธ์ระหว่างสิ่งต่าง ๆ ประกอบด้วยจุด (node) และเส้นเชื่อม (edge) เช่น คนกับเพื่อนในโซเชียล หรือเมืองกับถนน ส่วน BFS และ DFS คือสองวิธีพื้นฐานในการเดินสำรวจกราฟ",
+          ic: "🕸️",
+          learn:
+            "กราฟ G = (V, E) เป็นได้ทั้งมีทิศทางหรือไม่มี และมีน้ำหนักหรือไม่มี Adjacency matrix ใช้พื้นที่ O(V²) และเช็กเส้นเชื่อมได้ใน O(1) ส่วน adjacency list ใช้ O(V + E) เหมาะกับกราฟเบาบาง BFS ใช้คิวและหาเส้นทางสั้นสุดในกราฟไม่มีน้ำหนักได้ ส่วน DFS ใช้สแตกหรือ recursion ใช้ตรวจวงจร หาลำดับ topological และหา connected component",
+          cx: [
+            ["BFS / DFS", "O(V + E)"],
+            ["พื้นที่ของ Matrix", "O(V²)"],
+            ["พื้นที่ของ List", "O(V + E)"],
+            ["เช็กเส้นเชื่อม (matrix)", "O(1)"],
+          ],
+          uses: "เครือข่ายสังคม, แผนที่, web crawler, การ route เครือข่าย, กราฟความสัมพันธ์ของ dependency",
+          code: `function bfs(adj, start) {
+  const seen = new Set([start]), q = [start], order = [];
+  while (q.length) {
+    const u = q.shift(); order.push(u);
+    for (const v of adj[u]) if (!seen.has(v)) { seen.add(v); q.push(v); }
+  }
+  return order;
+}`,
+          quiz: [
+            ["BFS ใช้โครงสร้างข้อมูลใด?", ["สแตก", "คิว", "ฮีป", "ต้นไม้"], 1],
+            [
+              "กราฟแบบเบาบาง (sparse) ควรเก็บด้วยแบบใด?",
+              ["Adjacency matrix", "Adjacency list", "อาร์เรย์", "สแตก"],
+              1,
+            ],
+          ],
+        },
+        sp: {
+          n: "เส้นทางสั้นสุดและ MST",
+          what: "หัวข้อนี้ตอบสองคำถามหลักบนกราฟที่มีน้ำหนัก คือ เดินทางจากจุดเริ่มต้นไปจุดอื่นอย่างไรให้ใกล้ที่สุด (เส้นทางสั้นสุด เช่น Google Maps) และเชื่อมทุกจุดเข้าด้วยกันอย่างไรให้ต้นทุนรวมต่ำที่สุด (MST เช่น วางสายไฟเชื่อมทุกหมู่บ้าน)",
+          ic: "🧭",
+          learn:
+            "Dijkstra (น้ำหนักไม่ติดลบ) ที่ใช้ min-heap ทำงานใน O((V + E) log V) Bellman-Ford รับเส้นเชื่อมติดลบได้ใน O(VE) และตรวจ negative cycle ได้ ต้นไม้ทอดข้ามน้อยสุด (MST) เชื่อมทุกจุดด้วยน้ำหนักรวมน้อยที่สุด: Kruskal เรียงเส้นเชื่อมและใช้ Union-Find ส่วน Prim ค่อย ๆ ขยายต้นไม้โดยใช้ฮีป Topological sort เรียงลำดับ DAG (ใช้เวลาจบของ DFS หรืออัลกอริทึมของ Kahn)",
+          cx: [
+            ["Dijkstra (ฮีป)", "O((V+E) log V)"],
+            ["Bellman-Ford", "O(VE)"],
+            ["Kruskal", "O(E log E)"],
+            ["Topological sort", "O(V + E)"],
+          ],
+          uses: "GPS นำทาง, โปรโตคอลเครือข่าย (OSPF), ระบบ build, ออกแบบชิปและวงจร",
+          code: `function dijkstra(adj, s) { // adj[u] = [[v, w], ...]
+  const d = adj.map(() => Infinity); d[s] = 0;
+  const pq = [[0, s]]; // use a real min-heap for O(log V)
+  while (pq.length) {
+    pq.sort((a, b) => a[0] - b[0]);
+    const [du, u] = pq.shift();
+    if (du > d[u]) continue;
+    for (const [v, w] of adj[u]) if (du + w < d[v]) { d[v] = du + w; pq.push([d[v], v]); }
+  }
+  return d;
+}`,
+          quiz: [
+            [
+              "Dijkstra ใช้ไม่ได้เมื่อมี…",
+              [
+                "วงจร (cycle)",
+                "เส้นเชื่อมน้ำหนักติดลบ",
+                "โหนดจำนวนมาก",
+                "เส้นเชื่อมมีทิศทาง",
+              ],
+              1,
+            ],
+            [
+              "Kruskal ต้องใช้โครงสร้างใด?",
+              ["Union-Find", "Trie", "สแตก", "คิว"],
+              0,
+            ],
+          ],
+        },
+        dsu: {
+          n: "Disjoint Set (Union-Find)",
+          what: "Union-Find คือโครงสร้างข้อมูลที่ใช้ตอบว่าสองสิ่งอยู่กลุ่มเดียวกันหรือไม่ และรวมสองกลุ่มเป็นหนึ่งได้เร็วมาก เหมือนการตามดูว่าใครเป็นเพื่อนของเพื่อนกันบ้างในเครือข่ายที่ค่อย ๆ เชื่อมกัน",
+          ic: "🧩",
+          learn:
+            "ติดตามการแบ่งสมาชิกออกเป็นกลุ่ม find(x) คืนตัวแทนของกลุ่ม ส่วน union(a, b) รวมสองกลุ่มเข้าด้วยกัน การทำ path compression และ union by rank/size ทำให้แต่ละการดำเนินการเกือบคงที่: O(α(n)) เมื่อ α คือ inverse Ackermann function (น้อยกว่า 5 สำหรับ n ที่ใช้จริงทุกขนาด)",
+          cx: [
+            ["Find", "O(α(n))"],
+            ["Union", "O(α(n))"],
+            ["สร้างเซต", "O(1)"],
+            ["พื้นที่", "O(n)"],
+          ],
+          uses: "MST ของ Kruskal, connected component, ตรวจวงจร, ตรวจการเชื่อมต่อของเครือข่าย",
+          code: `class DSU {
+  constructor(n) { this.p = Array.from({ length: n }, (_, i) => i); this.r = new Array(n).fill(0); }
+  find(x) { return this.p[x] === x ? x : (this.p[x] = this.find(this.p[x])); } // path compression
+  union(a, b) {
+    a = this.find(a); b = this.find(b); if (a === b) return false;
+    if (this.r[a] < this.r[b]) [a, b] = [b, a];
+    this.p[b] = a; if (this.r[a] === this.r[b]) this.r[a]++; return true;
+  }
+}`,
+          quiz: [
+            [
+              "path compression ช่วยให้ … เร็วขึ้น",
+              ["find", "การเรียงลำดับ", "การแทรกฮีป", "BFS"],
+              0,
+            ],
+            [
+              "α(n) คือ…",
+              ["inverse Ackermann (เล็กมาก)", "log n", "n", "n²"],
+              0,
+            ],
+          ],
+        },
+        sort: {
+          n: "อัลกอริทึมการเรียงลำดับ",
+          what: "การเรียงลำดับคือการจัดข้อมูลให้เรียงจากน้อยไปมาก (หรือกลับกัน) มีหลายวิธีที่แลกกันระหว่างความเร็ว หน่วยความจำ และความเสถียร เหมือนการเรียงไพ่ในมือที่แต่ละคนมีวิธีของตัวเอง",
+          ic: "↕️",
+          learn:
+            "การเรียงแบบเทียบค่าทำได้ดีกว่า Ω(n log n) ไม่ได้ Bubble, insertion และ selection sort เป็น O(n²) โดย insertion sort ดีมากกับข้อมูลน้อยหรือเกือบเรียงแล้ว Merge sort เป็นแบบ stable และ O(n log n) แต่ใช้พื้นที่เพิ่ม O(n) Quick sort เฉลี่ย O(n log n) กรณีแย่ที่สุด O(n²) และทำในที่เดิม Heap sort เป็น O(n log n) ทำในที่เดิมแต่ไม่ stable ส่วน counting และ radix sort ทำได้ O(n + k) กับจำนวนเต็มโดยไม่ต้องเทียบค่า",
+          cx: [
+            ["Merge sort", "O(n log n)"],
+            ["Quick sort (เฉลี่ย)", "O(n log n)"],
+            ["Insertion sort", "O(n²)"],
+            ["Counting sort", "O(n + k)"],
+          ],
+          uses: "ฐานข้อมูล, เตรียมข้อมูลให้ Binary search, การจัดอันดับ, pipeline ประมวลผลข้อมูล",
+          code: `function mergeSort(a) {
+  if (a.length < 2) return a;
+  const m = a.length >> 1, L = mergeSort(a.slice(0, m)), R = mergeSort(a.slice(m)), out = [];
+  while (L.length && R.length) out.push(L[0] <= R[0] ? L.shift() : R.shift());
+  return out.concat(L, R);
+}`,
+          quiz: [
+            [
+              "อัลกอริทึมใดเป็น stable และ O(n log n)?",
+              ["Quick sort", "Heap sort", "Merge sort", "Selection sort"],
+              2,
+            ],
+            [
+              "กรณีแย่ที่สุดของ Quick sort คือ?",
+              ["O(n log n)", "O(n²)", "O(n)", "O(log n)"],
+              1,
+            ],
+          ],
+        },
+        search: {
+          n: "การค้นหาและ Binary Search",
+          what: "การค้นหาคือการหาว่าข้อมูลที่ต้องการอยู่ตรงไหน ถ้าข้อมูลเรียงลำดับแล้วจะใช้ Binary search ได้ เหมือนการเปิดพจนานุกรมตรงกลางแล้วดูว่าคำที่หาอยู่ครึ่งหน้าหรือครึ่งหลัง ทำซ้ำจนเจอ",
+          ic: "🔍",
+          learn:
+            "Linear search ตรวจทีละตัว: O(n) ใช้ได้กับข้อมูลทุกแบบ Binary search ต้องการข้อมูลที่เรียงแล้วและเข้าถึงแบบสุ่มได้ โดยตัดช่วงลงครึ่งหนึ่งทุกขั้น: O(log n) การค้นด้วยแฮชเฉลี่ย O(1) และ interpolation search อาจถึง O(log log n) เมื่อข้อมูลกระจายสม่ำเสมอ ระวังบั๊ก overflow ของจุดกึ่งกลาง ให้ใช้ lo + (hi − lo) / 2",
+          cx: [
+            ["เชิงเส้น", "O(n)"],
+            ["Binary", "O(log n)"],
+            ["ค้นด้วยแฮช", "O(1) เฉลี่ย"],
+            ["Interpolation", "O(log log n)"],
+          ],
+          uses: "Dictionary, การค้นในฐานข้อมูล, การหาค่าขีดจำกัด (binary search on the answer)",
+          code: `function binarySearch(a, t) {
+  let lo = 0, hi = a.length - 1;
+  while (lo <= hi) {
+    const mid = lo + ((hi - lo) >> 1);
+    if (a[mid] === t) return mid;
+    a[mid] < t ? (lo = mid + 1) : (hi = mid - 1);
+  }
+  return -1;
+}`,
+          quiz: [
+            [
+              "Binary search ต้องการ…",
+              ["ข้อมูลที่เรียงแล้ว", "ตารางแฮช", "ลิงก์ลิสต์", "กราฟ"],
+              0,
+            ],
+            [
+              "ค้นข้อมูลที่เรียงแล้ว 1,024 ตัว ใช้กี่ขั้นตอน?",
+              ["ประมาณ 10", "ประมาณ 100", "ประมาณ 512", "1,024"],
+              0,
+            ],
+          ],
+        },
+        adv: {
+          n: "Skip List, Bloom Filter, LRU",
+          what: "สามโครงสร้างข้อมูลที่ใช้จริงในระบบใหญ่ คือ Skip list (ลิงก์ลิสต์ที่มีทางลัดให้ข้ามได้เร็ว) Bloom filter (ตัวกรองที่ตอบได้ว่า อาจมี หรือ ไม่มีแน่นอน โดยใช้หน่วยความจำน้อยมาก) และ LRU cache (ที่เก็บข้อมูลที่เพิ่งถูกใช้ไว้ใกล้มือ เหมือนโต๊ะทำงานที่วางของที่ใช้บ่อย)",
+          ic: "🚀",
+          learn:
+            "Skip list: ลิงก์ลิสต์หลายชั้นที่เลื่อนระดับแบบสุ่ม ค้นหาได้ O(log n) แบบคาดหมายโดยไม่ต้องหมุนโหนด (ใช้ใน Redis และ LevelDB) Bloom filter: บิตอาร์เรย์กับฟังก์ชันแฮช k ตัว ตอบได้ว่า ‘อาจมีอยู่’ หรือ ‘ไม่มีแน่นอน’ จึงเกิด false positive ได้แต่ไม่เกิด false negative และใช้หน่วยความจำน้อยมาก LRU cache: hash map ร่วมกับ doubly linked list ทำให้ get และ put เป็น O(1) และลบ (evict) ตัวที่ไม่ได้ใช้มานานที่สุด",
+          cx: [
+            ["การทำงานของ Skip list", "O(log n) คาดหมาย"],
+            ["ค้นด้วย Bloom", "O(k)"],
+            ["LRU get / put", "O(1)"],
+            ["False negative ของ Bloom", "ไม่มี"],
+          ],
+          uses: "ฐานข้อมูล, แคช, ตัวตรวจตัวสะกด, เราเตอร์เครือข่าย, เว็บเบราว์เซอร์",
+          code: `class LRU {
+  constructor(cap) { this.cap = cap; this.m = new Map(); } // Map remembers insertion order
+  get(k) { if (!this.m.has(k)) return -1; const v = this.m.get(k); this.m.delete(k); this.m.set(k, v); return v; }
+  put(k, v) {
+    this.m.delete(k); this.m.set(k, v);
+    if (this.m.size > this.cap) this.m.delete(this.m.keys().next().value);
+  }
+}`,
+          quiz: [
+            [
+              "Bloom filter อาจให้ผลแบบใด?",
+              [
+                "False negative",
+                "False positive",
+                "ทั้งสองแบบ",
+                "ไม่มีทั้งสองแบบ",
+              ],
+              1,
+            ],
+            [
+              "LRU cache ประกอบด้วย…",
+              [
+                "Hash map + doubly linked list",
+                "Heap + array",
+                "Trie + stack",
+                "Queue + tree",
+              ],
+              0,
+            ],
+          ],
+        },
+      };
+
+      const GROUPS = {
+        พื้นฐาน: ["bigo", "array"],
+        เชิงเส้น: ["stack", "queue", "list"],
+        แฮช: ["hash"],
+        ต้นไม้: ["bst", "avl", "heap", "trie", "btree", "segtree"],
+        กราฟ: ["graph", "sp", "dsu"],
+        อัลกอริทึม: ["sort", "search", "adv"],
+      };
+
+      const S = {};
+      function bstAdd(v) {
+        const n = { v };
+        if (!S.bst) {
+          S.bst = n;
+          return;
+        }
+        let c = S.bst;
+        for (;;) {
+          if (v === c.v) return;
+          const k = v < c.v ? "l" : "r";
+          if (!c[k]) {
+            c[k] = n;
+            return;
+          }
+          c = c[k];
+        }
+      }
+      function init() {
+        S.stack = [8, 3, 5];
+        S.queue = [5, 9, 2];
+        S.list = [4, 7, 1];
+        S.bst = null;
+        [50, 30, 70, 20, 40, 60].forEach(bstAdd);
+        init2();
+      }
+      init();
+
+      function draw(hi = -1, pop = -1) {
+        if (R[cur]) return R[cur](...arguments);
+        if (cur === "bst") return drawTree();
+        const a = S[cur];
+        const lb = (i) =>
+          cur === "stack"
+            ? i === a.length - 1
+              ? "◀ TOP"
+              : ""
+            : cur === "queue"
+              ? (i === 0 ? "FRONT" : "") +
+                (i === a.length - 1 ? (i === 0 ? " / " : "") + "REAR" : "")
+              : i === 0
+                ? "HEAD"
+                : i === a.length - 1
+                  ? "TAIL"
+                  : "";
+        $("#stage").innerHTML = a.length
+          ? `<div class="row">${a.map((v, i) => `<div class="cell"><div class="node ${i === hi ? "hi" : ""} ${i === pop ? "pop" : ""}">${v}</div><small>${lb(i)}</small></div>${cur === "list" ? '<span class="arr">' + (i < a.length - 1 ? "→" : "→ null") + "</span>" : ""}`).join("")}</div>`
+          : '<div class="empty">(ว่าง)</div>';
+      }
+      function drawTree(hl = [], nv = null, ok = null, rt) {
+        const r = rt === undefined ? S.bst : rt;
+        if (!r) {
+          $("#stage").innerHTML = '<div class="empty">(ต้นไม้ว่าง)</div>';
+          return;
+        }
+        const ns = [];
+        let i = 0,
+          md = 0;
+        (function g(n, d, p) {
+          if (!n) return;
+          g(n.l, d + 1, n);
+          n.x = i++ * 46 + 28;
+          n.y = d * 58 + 28;
+          n.p = p;
+          md = Math.max(md, d);
+          ns.push(n);
+          g(n.r, d + 1, n);
+        })(r, 0, null);
+        $("#stage").innerHTML =
+          `<svg width="${i * 46 + 10}" height="${md * 58 + 60}">` +
+          ns
+            .filter((n) => n.p)
+            .map(
+              (n) =>
+                `<line x1="${n.p.x}" y1="${n.p.y}" x2="${n.x}" y2="${n.y}"/>`,
+            )
+            .join("") +
+          ns
+            .map(
+              (n) =>
+                `<g class="tn ${ok === n.v ? "ok" : hl.includes(n.v) ? "hi" : ""} ${nv === n.v ? "pop" : ""}"><circle cx="${n.x}" cy="${n.y}" r="19"/><text x="${n.x}" y="${n.y}" dy=".35em">${n.v}</text></g>`,
+            )
+            .join("") +
+          "</svg>";
+        fitSvg();
+      }
+      const out = (i) => {
+        const n = document.querySelectorAll(".node")[i];
+        if (n) n.classList.add("out");
+      };
+      const full = () => {
+        if (S[cur].length >= 8) {
+          say("หน้าจอเต็ม (สูงสุด 8) ลบบางตัวก่อน");
+          return true;
+        }
+      };
+      async function walk(a, v) {
+        for (let i = 0; i < a.length; i++) {
+          draw(i);
+          say(
+            `เข้าตรวจโหนด ${a[i]}${a[i] === v ? " — เจอแล้ว!" : v < 0 ? ", ไปโหนดถัดไป →" : " ≠ " + v + ", ตามพอยน์เตอร์ไป →"}`,
+          );
+          await delay();
+          if (a[i] === v) return i;
+        }
+        say(`ไม่พบ ${v} (ถึง null แล้ว)`);
+        return -1;
+      }
+      async function bstInsert(v) {
+        if (!S.bst) {
+          S.bst = { v };
+          drawTree([], v);
+          say(`ต้นไม้ยังว่าง — ${v} กลายเป็น root`);
+          return;
+        }
+        let n = S.bst,
+          p = [];
+        for (;;) {
+          p.push(n.v);
+          drawTree(p);
+          say(
+            `${v} ${v === n.v ? "=" : v < n.v ? "<" : ">"} ${n.v}${v === n.v ? " — ซ้ำ ข้ามไป" : " → ไป" + (v < n.v ? "ซ้าย" : "ขวา")}`,
+          );
+          await delay();
+          if (v === n.v) return;
+          const k = v < n.v ? "l" : "r";
+          if (!n[k]) {
+            n[k] = { v };
+            drawTree(p, v);
+            say(`แทรก ${v} เป็นลูก${k === "l" ? "ซ้าย" : "ขวา"}ของ ${n.v}`);
+            return;
+          }
+          n = n[k];
+        }
+      }
+      async function bstSearch(v) {
+        let n = S.bst,
+          p = [];
+        while (n) {
+          p.push(n.v);
+          if (n.v === v) {
+            drawTree(p, null, v);
+            say(`เจอ ${v} แล้ว!`);
+            return;
+          }
+          drawTree(p);
+          say(
+            `${v} ${v < n.v ? "<" : ">"} ${n.v} → ไป${v < n.v ? "ซ้าย" : "ขวา"}`,
+          );
+          await delay();
+          n = v < n.v ? n.l : n.r;
+        }
+        say(`ไม่พบ ${v} — ถึงตำแหน่งว่างแล้ว`);
+      }
+      async function inorder() {
+        const o = [];
+        (function g(n) {
+          if (n) {
+            g(n.l);
+            o.push(n.v);
+            g(n.r);
+          }
+        })(S.bst);
+        if (!o.length) {
+          say("ต้นไม้ว่าง");
+          return;
+        }
+        for (let i = 0; i < o.length; i++) {
+          drawTree(o.slice(0, i), null, o[i]);
+          say("In-order (ซ้าย → Root → ขวา): " + o.slice(0, i + 1).join(", "));
+          await delay();
+        }
+        drawTree();
+        say("ผลลัพธ์เรียงลำดับ: " + o.join(", "));
+      }
+      const OPS = {
+        stack: [
+          {
+            l: "Push",
+            f: async (v) => {
+              if (full()) return;
+              S.stack.push(v);
+              draw(-1, S.stack.length - 1);
+              say(`Push ${v} ขึ้นบนสุดของสแตก`);
+            },
+          },
+          {
+            l: "Pop",
+            f: async () => {
+              const a = S.stack;
+              if (!a.length) return say("สแตกว่าง — เกิด underflow!");
+              draw(a.length - 1);
+              say(`กำลัง Pop ${a[a.length - 1]} ออกจากบนสุด…`);
+              await delay();
+              out(a.length - 1);
+              await wait(350);
+              const x = a.pop();
+              draw();
+              say(`Pop ได้ ${x}`);
+            },
+          },
+          {
+            l: "Peek",
+            f: async () => {
+              const a = S.stack;
+              if (!a.length) return say("สแตกว่าง");
+              draw(a.length - 1);
+              say(`ค่าบนสุดคือ ${a[a.length - 1]} (ไม่ได้ลบออก)`);
+            },
+          },
+        ],
+        queue: [
+          {
+            l: "Enqueue",
+            f: async (v) => {
+              if (full()) return;
+              S.queue.push(v);
+              draw(-1, S.queue.length - 1);
+              say(`${v} เข้าต่อท้ายคิว (rear)`);
+            },
+          },
+          {
+            l: "Dequeue",
+            f: async () => {
+              const a = S.queue;
+              if (!a.length) return say("คิวว่าง — เกิด underflow!");
+              draw(0);
+              say(`กำลังให้บริการ ${a[0]} จากหน้าคิว (front)…`);
+              await delay();
+              out(0);
+              await wait(350);
+              const x = a.shift();
+              draw();
+              say(`Dequeue ได้ ${x}`);
+            },
+          },
+        ],
+        list: [
+          {
+            l: "เพิ่มหัว",
+            f: async (v) => {
+              if (full()) return;
+              S.list.unshift(v);
+              draw(-1, 0);
+              say(`${v} กลายเป็น HEAD ใหม่ — O(1)`);
+            },
+          },
+          {
+            l: "เพิ่มท้าย",
+            f: async (v) => {
+              if (full()) return;
+              const a = S.list;
+              if (a.length) {
+                await walk(a, -1);
+              }
+              a.push(v);
+              draw(-1, a.length - 1);
+              say(`เดินไปจนสุดลิสต์แล้วต่อ ${v} ที่ท้าย`);
+            },
+          },
+          {
+            l: "ค้นหา",
+            n: 1,
+            f: async (v) => {
+              await walk(S.list, v);
+            },
+          },
+          {
+            l: "ลบ",
+            n: 1,
+            f: async (v) => {
+              const a = S.list,
+                i = await walk(a, v);
+              if (i < 0) return;
+              say(`กำลังตัด ${v} ออกจากลิสต์…`);
+              out(i);
+              await wait(350);
+              a.splice(i, 1);
+              draw();
+              say(`ลบ ${v} แล้ว`);
+            },
+          },
+        ],
+        bst: [
+          {
+            l: "แทรก",
+            f: async (v) => {
+              await bstInsert(v);
+            },
+          },
+          {
+            l: "ค้นหา",
+            n: 1,
+            f: async (v) => {
+              if (!S.bst) return say("ต้นไม้ว่าง");
+              await bstSearch(v);
+            },
+          },
+          {
+            l: "In-order",
+            f: async () => {
+              await inorder();
+            },
+          },
+        ],
+      };
+      const R = {},
+        fd = () => gate((1500 - sp * 130) / 5),
+        RI = (n) => 10 + Math.floor(Math.random() * n),
+        st = (h) => {
+          $("#stage").innerHTML = h;
+          fitSvg();
+        };
+      function fitSvg() {
+        const v = document.querySelector("#stage svg");
+        if (v && !v.getAttribute("viewBox")) {
+          v.setAttribute(
+            "viewBox",
+            "0 0 " + v.getAttribute("width") + " " + v.getAttribute("height"),
+          );
+          v.style.maxWidth = "100%";
+          v.style.height = "auto";
+        }
+      }
+      function trAdd(w) {
+        let o = S.trie;
+        for (const c of w) o = o[c] ??= {};
+        o.$ = 1;
+      }
+      function init2() {
+        S.bigo = 8;
+        S.array = { a: [4, 8, 1], c: 4 };
+        S.hash = [[12], [], [7, 22], [], [9]];
+        S.heap = [10, 20, 15, 30, 40];
+        S.avl = null;
+        S.btree = { k: [10, 20, 30], leaf: true, c: [] };
+        S.trie = {};
+        ["cat", "car", "dog"].forEach(trAdd);
+        S.seg = [3, 1, 4, 1, 5, 9, 2, 6];
+        S.dsu = [0, 0, 1, 2, 4, 4, 6, 6];
+        S.sort = [34, 12, 78, 45, 9, 61, 27, 88, 3, 52];
+        S.search = [2, 5, 8, 12, 16, 23, 38, 45, 56, 72, 91];
+        S.adv = { l: [7, 3, 9], b: Array(16).fill(0) };
+      }
+      const cells = (a, H = [], O = [], D = []) =>
+        `<div class="row" style="flex-wrap:wrap;justify-content:center">${a.map((v, i) => `<div class="cell"><div class="node ${H.includes(i) ? "hi" : ""} ${O.includes(i) ? "ok" : ""} ${v == null || D.includes(i) ? "emp" : ""}">${v == null ? "·" : v}</div><small>${i}</small></div>`).join("")}</div>`;
+
+      /* Big-O */
+      R.bigo = () => {
+        const n = S.bigo,
+          r = [
+            ["O(1)", 1],
+            ["O(log n)", Math.ceil(Math.log2(n))],
+            ["O(n)", n],
+            ["O(n log n)", Math.round(n * Math.log2(n))],
+            ["O(n²)", n * n],
+          ];
+        st(
+          `<div class="hb">${r.map(([l, v]) => `<div class="hr"><span>${l}</span><div class="hf" style="width:${Math.max(3, (Math.log10(v + 1) / Math.log10(n * n + 1)) * 100)}%"></div><b>${v}</b></div>`).join("")}</div>`,
+        );
+      };
+      /* Array */
+      R.array = (hi = -1) => {
+        const { a, c } = S.array;
+        st(
+          cells(
+            Array.from({ length: c }, (_, i) => (i < a.length ? a[i] : null)),
+            [hi],
+          ),
+        );
+      };
+      const grow = async () => {
+        const A = S.array;
+        if (A.a.length < A.c) return true;
+        if (A.c >= 16) {
+          say("ถึงความจุสูงสุดที่แสดงได้ (16) แล้ว");
+          return false;
+        }
+        say(
+          `อาร์เรย์เต็ม! จองความจุ ${A.c * 2} แล้วคัดลอก ${A.c} ตัว: O(n) แต่เฉลี่ย (amortized) O(1)`,
+        );
+        A.c *= 2;
+        R.array();
+        await delay();
+        return true;
+      };
+      /* Hash */
+      R.hash = (hb = -1, hj = -1, pj = -1) =>
+        st(
+          `<div style="display:grid;grid-template-columns:repeat(${S.hash.length > 6 ? 2 : 1},max-content);gap:0 40px">${S.hash.map((b, i) => `<div class="row" style="margin:5px 0"><b style="width:44px">[${i}]</b>${b.map((v, j) => `<div class="node ${i === hb && j === hj ? "hi" : ""} ${i === hb && j === pj ? "pop" : ""}">${v}</div><span class="arr">→</span>`).join("")}<span class="arr">null</span></div>`).join("")}</div>`,
+        );
+      const hcap = () => {
+        const n = S.hash.flat().length;
+        return `load factor α = ${n}/${S.hash.length} = ${(n / S.hash.length).toFixed(2)}`;
+      };
+      /* Heap */
+      R.heap = (hl = []) => {
+        const a = S.heap,
+          H = [].concat(hl);
+        let md = 0;
+        const P = a.map((_, i) => {
+          const d = 31 - Math.clz32(i + 1);
+          md = Math.max(md, d);
+          return [
+            ((i + 1 - (1 << d) + 0.5) / (1 << d)) * 440 + 20,
+            d * 56 + 24,
+          ];
+        });
+        st(
+          `<div><svg width="480" height="${md * 56 + 50}">${a.map((_, i) => (i ? `<line x1="${P[(i - 1) >> 1][0]}" y1="${P[(i - 1) >> 1][1]}" x2="${P[i][0]}" y2="${P[i][1]}"/>` : "")).join("")}${a.map((v, i) => `<g class="tn ${H.includes(i) ? "hi" : ""}"><circle cx="${P[i][0]}" cy="${P[i][1]}" r="19"/><text x="${P[i][0]}" y="${P[i][1]}" dy=".35em">${v}</text></g>`).join("")}</svg>${cells(a, H)}</div>`,
+        );
+      };
+      /* AVL */
+      R.avl = () => drawTree([], null, null, S.avl);
+      const ht = (n) => (n ? n.h : 0),
+        up = (n) => {
+          n.h = 1 + Math.max(ht(n.l), ht(n.r));
+        },
+        has = (n, v) => n && (n.v === v || has(v < n.v ? n.l : n.r, v));
+      const rotR = (y) => {
+          const x = y.l;
+          y.l = x.r;
+          x.r = y;
+          up(y);
+          up(x);
+          return x;
+        },
+        rotL = (x) => {
+          const y = x.r;
+          x.r = y.l;
+          y.l = x;
+          up(x);
+          up(y);
+          return y;
+        };
+      function avlIns(n, v) {
+        if (!n) return { v, h: 1 };
+        if (v < n.v) n.l = avlIns(n.l, v);
+        else n.r = avlIns(n.r, v);
+        up(n);
+        return n;
+      }
+      function bal(n, L) {
+        if (!n) return n;
+        n.l = bal(n.l, L);
+        n.r = bal(n.r, L);
+        up(n);
+        const b = ht(n.l) - ht(n.r);
+        if (b > 1) {
+          if (ht(n.l.l) < ht(n.l.r)) {
+            L.push("กรณี Left-Right ที่ " + n.v);
+            n.l = rotL(n.l);
+          } else L.push("กรณี Left-Left ที่ " + n.v);
+          return rotR(n);
+        }
+        if (b < -1) {
+          if (ht(n.r.r) < ht(n.r.l)) {
+            L.push("กรณี Right-Left ที่ " + n.v);
+            n.r = rotR(n.r);
+          } else L.push("กรณี Right-Right ที่ " + n.v);
+          return rotL(n);
+        }
+        return n;
+      }
+      async function avlAdd(v) {
+        if (has(S.avl, v)) return say(`มี ${v} อยู่แล้ว`);
+        S.avl = avlIns(S.avl, v);
+        drawTree([], v, null, S.avl);
+        say(`แทรก ${v} แบบ BST ปกติ`);
+        await delay();
+        const L = [];
+        S.avl = bal(S.avl, L);
+        drawTree([], null, null, S.avl);
+        say(
+          L.length
+            ? `ไม่สมดุล! ${L.join(", ")} → แก้ด้วยการหมุน (rotation)`
+            : "balance factor ยังอยู่ในช่วง −1..1 ไม่ต้องหมุน",
+        );
+      }
+      /* B-Tree (order 4: max 3 keys) */
+      const bcount = (n) =>
+          1 + (n.leaf ? 0 : n.c.reduce((s, c) => s + bcount(c), 0)),
+        kcount = (n) =>
+          n.k.length + (n.leaf ? 0 : n.c.reduce((s, c) => s + kcount(c), 0));
+      function btIns(n, v) {
+        if (n.k.includes(v)) return null;
+        if (n.leaf) {
+          n.k.push(v);
+          n.k.sort((a, b) => a - b);
+        } else {
+          let i = n.k.findIndex((x) => v < x);
+          if (i < 0) i = n.k.length;
+          const sp2 = btIns(n.c[i], v);
+          if (sp2) {
+            n.k.splice(i, 0, sp2.k);
+            n.c.splice(i + 1, 0, sp2.r);
+          }
+        }
+        if (n.k.length > 3) {
+          const mid = n.k[1],
+            r = {
+              k: n.k.splice(2),
+              leaf: n.leaf,
+              c: n.leaf ? [] : n.c.splice(2),
+            };
+          n.k.pop();
+          return { k: mid, r };
+        }
+        return null;
+      }
+      R.btree = (hl = []) => {
+        const lv = [],
+          H = [].concat(hl);
+        (function g(n, d) {
+          (lv[d] = lv[d] || []).push(n);
+          if (!n.leaf) n.c.forEach((c) => g(c, d + 1));
+        })(S.btree, 0);
+        st(
+          `<div>${lv.map((l) => `<div class="row" style="justify-content:center;margin:10px 0;gap:14px">${l.map((n) => `<div class="row" style="gap:0;border:2px solid var(--ac);border-radius:10px;overflow:hidden">${n.k.map((k) => `<div class="node ${H.includes(k) ? "hi" : ""}" style="border:0;border-radius:0">${k}</div>`).join("")}</div>`).join("")}</div>`).join("")}</div>`,
+        );
+      };
+      async function btAdd(v) {
+        const k0 = kcount(S.btree),
+          n0 = bcount(S.btree),
+          s2 = btIns(S.btree, v);
+        if (s2) S.btree = { k: [s2.k], c: [S.btree, s2.r], leaf: false };
+        if (kcount(S.btree) === k0) return say(`มี ${v} อยู่แล้ว`);
+        R.btree([v]);
+        say(
+          bcount(S.btree) > n0
+            ? "โหนดล้น (4 คีย์) → แยกโหนด และดันคีย์กลางขึ้นไปที่ parent"
+            : `แทรก ${v} ลงใบที่ถูกต้อง (หนึ่งโหนดมีได้สูงสุด 3 คีย์)`,
+        );
+      }
+      async function btSearch(v) {
+        let n = S.btree;
+        while (n) {
+          R.btree(n.k);
+          say("ไล่ดูคีย์ในโหนดนี้: " + n.k.join(", "));
+          await delay();
+          if (n.k.includes(v)) {
+            R.btree([v]);
+            say(`เจอ ${v} แล้ว`);
+            return;
+          }
+          if (n.leaf) break;
+          let i = n.k.findIndex((x) => v < x);
+          if (i < 0) i = n.k.length;
+          n = n.c[i];
+        }
+        say(`ไม่พบ ${v}`);
+      }
+      /* Trie */
+      R.trie = (hl = [], ok = null) => {
+        const H = [].concat(hl),
+          ns = [];
+        let i = 0,
+          md = 0;
+        (function g(o, ch, d, p, path) {
+          const ks = Object.keys(o)
+              .filter((k) => k !== "$")
+              .sort(),
+            n = { ch, p, path, end: !!o.$, y: d * 54 + 24 };
+          ns.push(n);
+          md = Math.max(md, d);
+          ks.forEach((k) => g(o[k], k, d + 1, n, path + k));
+          n.x = ks.length
+            ? ns.filter((m) => m.p === n).reduce((s, m) => s + m.x, 0) /
+              ks.length
+            : i++ * 40 + 24;
+        })(S.trie, "•", 0, null, "");
+        st(
+          `<svg width="${Math.max(i, 1) * 40 + 10}" height="${md * 54 + 50}">${ns
+            .filter((n) => n.p)
+            .map(
+              (n) =>
+                `<line x1="${n.p.x}" y1="${n.p.y}" x2="${n.x}" y2="${n.y}"/>`,
+            )
+            .join(
+              "",
+            )}${ns.map((n) => `<g class="tn ${ok === n.path ? "ok" : H.includes(n.path) ? "hi" : ""}"><circle cx="${n.x}" cy="${n.y}" r="17" ${n.end ? 'style="stroke-width:5"' : ""}/><text x="${n.x}" y="${n.y}" dy=".35em">${n.ch}</text></g>`).join("")}</svg>`,
+        );
+      };
+      const W = ["cat", "car", "cart", "dog", "door", "dot", "do"],
+        tw = (v) =>
+          typeof v === "string"
+            ? v
+                .toLowerCase()
+                .replace(/[^a-z]/g, "")
+                .slice(0, 8)
+            : W[v % W.length];
+      /* Segment tree */
+      const segT = () => {
+        const t = Array(16).fill(0);
+        S.seg.forEach((x, i) => {
+          t[8 + i] = x;
+        });
+        for (let i = 7; i > 0; i--) t[i] = t[2 * i] + t[2 * i + 1];
+        return t;
+      };
+      R.segtree = (hl = []) => {
+        const t = segT(),
+          H = [].concat(hl);
+        st(
+          `<div style="width:496px">${[0, 1, 2, 3]
+            .map(
+              (d) =>
+                `<div style="display:flex;margin:6px 0">${Array.from(
+                  { length: 1 << d },
+                  (_, j) => {
+                    const i = (1 << d) + j,
+                      w = 8 >> d;
+                    return `<div style="width:${w * 62}px;display:flex;justify-content:center"><div class="node ${H.includes(i) ? "hi" : ""}" style="height:auto;padding:4px 8px;line-height:1.2">${t[i]}<small style="font-size:10px;font-weight:400">${j * w}-${j * w + w - 1}</small></div></div>`;
+                  },
+                ).join("")}</div>`,
+            )
+            .join("")}</div>`,
+        );
+      };
+      /* Graph, Dijkstra, Prim */
+      const GP = [
+          [40, 40],
+          [160, 40],
+          [280, 40],
+          [40, 140],
+          [160, 140],
+          [280, 140],
+          [160, 230],
+        ],
+        GE = [
+          [0, 1, 4],
+          [1, 2, 3],
+          [0, 3, 2],
+          [1, 4, 6],
+          [2, 5, 2],
+          [3, 4, 5],
+          [4, 5, 1],
+          [4, 6, 3],
+        ];
+      const nb = (u) =>
+        GE.filter((e) => e[0] === u || e[1] === u)
+          .map((e) => (e[0] === u ? e[1] : e[0]))
+          .sort((a, b) => a - b);
+      const gsvg = (cls, lab, hot = [], w = 0) =>
+        `<svg width="330" height="270">${GE.map(([a, b, c]) => {
+          const A = GP[a],
+            B = GP[b],
+            h = hot.some(
+              (e) => (e[0] === a && e[1] === b) || (e[0] === b && e[1] === a),
+            );
+          return `<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" ${h ? 'style="stroke:var(--ac2);stroke-width:5"' : ""}/>${w ? `<text class="dl" x="${(A[0] + B[0]) / 2 + (A[0] === B[0] ? 12 : 0)}" y="${(A[1] + B[1]) / 2 - 6}" style="fill:var(--mu)">${c}</text>` : ""}`;
+        }).join(
+          "",
+        )}${GP.map((p, i) => `<g class="tn ${cls(i)}"><circle cx="${p[0]}" cy="${p[1]}" r="19"/><text x="${p[0]}" y="${p[1]}" dy=".35em">${i}</text></g>${lab(i) !== "" ? `<text class="dl" x="${p[0]}" y="${p[1] + 34}">${lab(i)}</text>` : ""}`).join("")}</svg>`;
+      R.graph = (c = -1, vis = [], ds = [], lab = "") =>
+        st(
+          `<div>${gsvg(
+            (i) => (i === c ? "hi" : vis.includes(i) ? "ok" : ""),
+            () => "",
+          )}<p class="arr">${lab}</p></div>`,
+        );
+      R.sp = (c = -1, vis = [], d = [], hot = []) =>
+        st(
+          `<div>${gsvg(
+            (i) => (i === c ? "hi" : vis.includes(i) ? "ok" : ""),
+            (i) => (d[i] === undefined ? "" : d[i] === Infinity ? "∞" : d[i]),
+            hot,
+            1,
+          )}</div>`,
+        );
+      async function trav(s, bfs) {
+        const ds = [s],
+          seen = new Set([s]),
+          vis = [],
+          nm = bfs ? "Queue" : "Stack";
+        while (ds.length) {
+          const u = bfs ? ds.shift() : ds.pop();
+          if (vis.includes(u)) continue;
+          vis.push(u);
+          const add = nb(u).filter((x) =>
+            bfs ? !seen.has(x) : !vis.includes(x),
+          );
+          (bfs ? add : add.reverse()).forEach((x) => {
+            seen.add(x);
+            ds.push(x);
+          });
+          R.graph(u, vis, ds, `${nm}: [${ds.join(", ")}]`);
+          say(
+            `${bfs ? "Dequeue" : "Pop"} ${u}: เยี่ยมชมโหนดนี้ แล้ว ${bfs ? "enqueue" : "push"} โหนดข้างเคียงที่ยังไม่เคยเยี่ยมชม`,
+          );
+          await delay();
+        }
+        R.graph(-1, vis, [], `ลำดับการเยี่ยมชม: ${vis.join(" → ")}`);
+        say(`${bfs ? "BFS" : "DFS"} เสร็จสิ้น: O(V + E)`);
+      }
+      async function dijk(s) {
+        const d = Array(7).fill(Infinity),
+          vis = [];
+        d[s] = 0;
+        for (;;) {
+          let u = -1;
+          d.forEach((x, i) => {
+            if (!vis.includes(i) && x < Infinity && (u < 0 || x < d[u])) u = i;
+          });
+          if (u < 0) break;
+          vis.push(u);
+          const ch = [];
+          GE.forEach(([a, b, w]) => {
+            const v = a === u ? b : b === u ? a : -1;
+            if (v >= 0 && d[u] + w < d[v]) {
+              d[v] = d[u] + w;
+              ch.push(v);
+            }
+          });
+          R.sp(u, vis, d);
+          say(
+            `ยืนยันโหนด ${u} (ระยะสั้นสุด ${d[u]})${ch.length ? ", แล้วปรับระยะของโหนด " + ch.join(", ") : ", ไม่มีโหนดที่ต้องปรับระยะ"}`,
+          );
+          await delay();
+        }
+        R.sp(-1, vis, d);
+        say(`Dijkstra จากโหนด ${s} เสร็จแล้ว: ระยะสั้นที่สุดอยู่ใต้โหนด`);
+      }
+      async function prim(s) {
+        const inT = [s],
+          hot = [];
+        let tot = 0;
+        while (inT.length < 7) {
+          let b = null;
+          GE.forEach((e) => {
+            const x = inT.includes(e[0]),
+              y = inT.includes(e[1]);
+            if (x !== y && (!b || e[2] < b[2])) b = e;
+          });
+          if (!b) break;
+          hot.push(b);
+          inT.push(inT.includes(b[0]) ? b[1] : b[0]);
+          tot += b[2];
+          R.sp(-1, inT, [], hot);
+          say(
+            `เพิ่มเส้นเชื่อมที่ถูกที่สุดที่ข้ามกลุ่ม ${b[0]}–${b[1]} (น้ำหนัก ${b[2]}) รวม ${tot}`,
+          );
+          await delay();
+        }
+        say(`น้ำหนักรวมของ MST = ${tot}`);
+      }
+      /* Union-Find */
+      const dfind = (x) => {
+        const p = [x];
+        while (S.dsu[x] !== x) {
+          x = S.dsu[x];
+          p.push(x);
+        }
+        return p;
+      };
+      const two = (v) => {
+        const t =
+          typeof v === "number"
+            ? [v, v * 7 + 3]
+            : String(v).split(/[ ,]+/).map(Number);
+        return [t[0] % 8, (isNaN(t[1]) ? t[0] * 7 + 3 : t[1]) % 8];
+      };
+      R.dsu = (hl = []) => {
+        const p = S.dsu,
+          H = [].concat(hl),
+          g = {};
+        p.forEach((_, i) => {
+          const r = dfind(i).at(-1);
+          (g[r] = g[r] || []).push(i);
+        });
+        st(
+          `<div>${Object.entries(g)
+            .map(
+              ([r, m]) =>
+                `<div class="row" style="margin:6px 0"><b style="width:72px">root ${r}</b>${m.map((i) => `<div class="node ${H.includes(i) ? "hi" : ""}">${i}</div>`).join("")}</div>`,
+            )
+            .join("")}<p class="arr">parent[] = [${p.join(", ")}]</p></div>`,
+        );
+      };
+      /* Sorting */
+      R.sort = (hl = [], ok = []) =>
+        st(
+          `<div class="bars">${S.sort.map((v, i) => `<div class="bar ${[].concat(ok).includes(i) ? "ok" : [].concat(hl).includes(i) ? "hi" : ""}" style="height:${v * 2 + 16}px">${v}</div>`).join("")}</div>`,
+        );
+      const sw = (a, i, j) => {
+          [a[i], a[j]] = [a[j], a[i]];
+        },
+        all = (a) => a.map((_, i) => i);
+      async function bub(a) {
+        let c = 0;
+        for (let i = 0; i < a.length - 1; i++)
+          for (let j = 0; j < a.length - 1 - i; j++) {
+            c++;
+            R.sort([j, j + 1], all(a).slice(a.length - i));
+            say(
+              `เทียบ ${a[j]} กับ ${a[j + 1]}${a[j] > a[j + 1] ? " → สลับ" : ""}`,
+            );
+            await fd();
+            if (a[j] > a[j + 1]) sw(a, j, j + 1);
+          }
+        return c;
+      }
+      async function sel(a) {
+        let c = 0;
+        for (let i = 0; i < a.length - 1; i++) {
+          let m = i;
+          for (let j = i + 1; j < a.length; j++) {
+            c++;
+            R.sort([m, j], all(a).slice(0, i));
+            say(`หาค่าน้อยสุดในส่วนที่ยังไม่เรียง (ตอนนี้น้อยสุด ${a[m]})`);
+            await fd();
+            if (a[j] < a[m]) m = j;
+          }
+          sw(a, i, m);
+        }
+        return c;
+      }
+      async function ins(a) {
+        let c = 0;
+        for (let i = 1; i < a.length; i++) {
+          let j = i;
+          while (j > 0 && (c++, a[j - 1] > a[j])) {
+            R.sort([j - 1, j]);
+            say(`เลื่อน: ${a[j]} ขยับไปทางซ้ายผ่าน ${a[j - 1]}`);
+            await fd();
+            sw(a, j, j - 1);
+            j--;
+          }
+        }
+        return c;
+      }
+      async function qs(a, l, r, o) {
+        if (l >= r) return;
+        const p = a[r];
+        let i = l;
+        for (let j = l; j < r; j++) {
+          o.c++;
+          R.sort([j, r]);
+          say(`Pivot ${p}: เทียบ ${a[j]}${a[j] < p ? " → ไปฝั่งซ้าย" : ""}`);
+          await fd();
+          if (a[j] < p) {
+            sw(a, i, j);
+            i++;
+          }
+        }
+        sw(a, i, r);
+        R.sort([i]);
+        say(`Pivot ${p} อยู่ตำแหน่งสุดท้ายที่ถูกต้องแล้ว (${i})`);
+        await fd();
+        await qs(a, l, i - 1, o);
+        await qs(a, i + 1, r, o);
+      }
+      async function ms(a, l, r, o) {
+        if (l >= r) return;
+        const m = (l + r) >> 1;
+        await ms(a, l, m, o);
+        await ms(a, m + 1, r, o);
+        const L = a.slice(l, m + 1),
+          R2 = a.slice(m + 1, r + 1);
+        let i = 0,
+          j = 0,
+          k = l;
+        while (i < L.length || j < R2.length) {
+          o.c++;
+          a[k] =
+            j >= R2.length || (i < L.length && L[i] <= R2[j])
+              ? L[i++]
+              : R2[j++];
+          R.sort([k]);
+          say(
+            `Merge ช่วง ${l}–${r}: เขียน ${a[k]} (ตัวที่เล็กกว่าของหัวสองฝั่ง)`,
+          );
+          await fd();
+          k++;
+        }
+      }
+      const sortOp = (l, f, nm) => ({
+        l,
+        f: async () => {
+          if (S.sort.every((x, i, b) => !i || b[i - 1] <= x)) {
+            S.sort = Array.from({ length: 10 }, () => RI(90));
+            R.sort();
+            say("ข้อมูลเรียงอยู่แล้ว จึงสุ่มข้อมูลใหม่ให้ก่อน");
+            await delay();
+          }
+          const a = S.sort,
+            o = { c: 0 };
+          if (f.length === 1) o.c = await f(a);
+          else await f(a, 0, a.length - 1, o);
+          R.sort([], all(a));
+          say(`${nm} เสร็จสิ้น: เทียบ ${o.c} ครั้ง`);
+        },
+      });
+      /* Search */
+      R.search = (m = -1, lo = 0, hi = 99, f = -1) => {
+        const a = S.search;
+        st(
+          cells(
+            a,
+            [m],
+            f >= 0 ? [f] : [],
+            a.map((_, i) => i).filter((i) => i < lo || i > hi),
+          ),
+        );
+      };
+      /* Skip/Bloom/LRU */
+      const bh = (k) => [k % 16, (k * 7 + 3) % 16, (k * 11 + 5) % 16];
+      R.adv = (hl = -1, pop = -1, bits = []) => {
+        const { l, b } = S.adv,
+          B = [].concat(bits);
+        st(
+          `<div><b>LRU cache (ความจุ 4)</b><div class="row" style="margin:8px 0;min-height:70px">${l.map((v, i) => `<div class="cell"><div class="node ${i === hl ? "hi" : ""} ${i === pop ? "pop" : ""}">${v}</div><small>${i === 0 ? "MRU" : i === l.length - 1 ? "LRU" : ""}</small></div>`).join("") || '<span class="empty">(ว่าง)</span>'}</div><b>Bloom filter (16 บิต, 3 แฮช)</b><div class="row" style="margin:8px 0;gap:3px">${b.map((x, i) => `<div class="cell"><div class="node ${B.includes(i) ? "hi" : x ? "ok" : ""}" style="min-width:26px;height:30px;padding:0">${x}</div><small>${i}</small></div>`).join("")}</div></div>`,
+        );
+      };
+
+      Object.assign(OPS, {
+        bigo: [
+          {
+            l: "ตั้งค่า n",
+            n: 1,
+            f: async (v) => {
+              S.bigo = Math.max(2, Math.min(v, 5000));
+              R.bigo();
+              say(`n = ${S.bigo}`);
+            },
+          },
+          {
+            l: "เพิ่ม n เป็น 2 เท่า",
+            f: async () => {
+              S.bigo = Math.min(S.bigo * 2, 5000);
+              R.bigo();
+              say(
+                `n เพิ่มเป็น ${S.bigo}: O(n) เพิ่ม 2 เท่า, O(n²) เพิ่ม 4 เท่า, O(log n) เพิ่มแค่ 1`,
+              );
+            },
+          },
+        ],
+        array: [
+          {
+            l: "ต่อท้าย",
+            f: async (v) => {
+              if (!(await grow())) return;
+              S.array.a.push(v);
+              R.array(S.array.a.length - 1);
+              say(`เพิ่ม ${v} ที่ index ${S.array.a.length - 1}`);
+            },
+          },
+          {
+            l: "แทรกหน้า",
+            f: async (v) => {
+              if (!(await grow())) return;
+              const a = S.array.a;
+              for (let i = a.length - 1; i >= 0; i--) {
+                R.array(i);
+                say(`เลื่อน a[${i}] ไปทางขวา 1 ช่อง`);
+                await fd();
+              }
+              a.unshift(v);
+              R.array(0);
+              say(`แทรก ${v} ที่ index 0: ต้องเลื่อน O(n)`);
+            },
+          },
+          {
+            l: "เข้าถึง [i]",
+            n: 1,
+            f: async (v) => {
+              const a = S.array.a;
+              if (v >= a.length) return say(`index ${v} เกินขอบเขต`);
+              R.array(v);
+              say(`a[${v}] = ${a[v]}: เข้าถึงตรง O(1)`);
+            },
+          },
+          {
+            l: "ลบ [i]",
+            n: 1,
+            f: async (v) => {
+              const a = S.array.a;
+              if (v >= a.length) return say("index เกินขอบเขต");
+              for (let i = v + 1; i < a.length; i++) {
+                R.array(i);
+                say(`เลื่อน a[${i}] ไปทางซ้าย 1 ช่อง`);
+                await fd();
+              }
+              a.splice(v, 1);
+              R.array();
+              say(`ลบ index ${v}: O(n)`);
+            },
+          },
+        ],
+        hash: [
+          {
+            l: "แทรก",
+            f: async (v) => {
+              const h = S.hash,
+                i = v % h.length;
+              R.hash(i);
+              say(`h(${v}) = ${v} mod ${h.length} = bucket ${i}`);
+              await delay();
+              if (h[i].includes(v)) return say(`มี ${v} อยู่แล้ว`);
+              const col = h[i].length > 0;
+              h[i].push(v);
+              R.hash(i, -1, h[i].length - 1);
+              say(
+                (col
+                  ? "ชนกัน (collision)! ต่อท้ายเป็น chain ใน bucket เดิม "
+                  : "วางแล้ว ") + hcap(),
+              );
+            },
+          },
+          {
+            l: "ค้นหา",
+            n: 1,
+            f: async (v) => {
+              const h = S.hash,
+                i = v % h.length;
+              for (let j = -1; j < h[i].length; j++) {
+                R.hash(i, j);
+                say(
+                  j < 0
+                    ? `h(${v}) = bucket ${i}`
+                    : `เทียบ ${h[i][j]}${h[i][j] === v ? " — เจอแล้ว!" : " ≠ " + v}`,
+                );
+                await delay();
+                if (h[i][j] === v) return;
+              }
+              say(`ไม่พบ ${v}`);
+            },
+          },
+          {
+            l: "ลบ",
+            n: 1,
+            f: async (v) => {
+              const h = S.hash,
+                i = v % h.length,
+                j = h[i].indexOf(v);
+              R.hash(i, j);
+              say(
+                j < 0
+                  ? `${v} ไม่อยู่ใน bucket ${i}`
+                  : `กำลังลบ ${v} ออกจาก bucket ${i}`,
+              );
+              if (j < 0) return;
+              await delay();
+              h[i].splice(j, 1);
+              R.hash();
+              say("ลบแล้ว " + hcap());
+            },
+          },
+          {
+            l: "Rehash ×2",
+            f: async () => {
+              const old = S.hash.flat(),
+                m = S.hash.length * 2 + 1;
+              if (m > 11)
+                return say(
+                  "ตารางใหญ่สุดแล้ว (สูงสุด 11 bucket เพื่อให้แสดงผลได้พอดี)",
+                );
+              S.hash = Array.from({ length: m }, () => []);
+              old.forEach((x) => S.hash[x % m].push(x));
+              R.hash();
+              say(`ขยายเป็น ${m} bucket และ rehash ทุกคีย์ ` + hcap());
+            },
+          },
+        ],
+        heap: [
+          {
+            l: "แทรก",
+            f: async (v) => {
+              const a = S.heap;
+              if (a.length >= 15) return say("ฮีปเต็มหน้าจอ (15)");
+              a.push(v);
+              let i = a.length - 1;
+              R.heap(i);
+              say(`เพิ่ม ${v} ที่ท้าย (index ${i})`);
+              await delay();
+              while (i > 0) {
+                const p = (i - 1) >> 1;
+                R.heap([i, p]);
+                say(
+                  `เทียบ ${a[i]} กับ parent ${a[p]}${a[p] > a[i] ? " → สลับ" : " → เป็นไปตามกฎของฮีป"}`,
+                );
+                await delay();
+                if (a[p] <= a[i]) break;
+                sw(a, p, i);
+                i = p;
+                R.heap(i);
+                await fd();
+              }
+              R.heap(i);
+              say(`แทรก ${v} แล้ว: sift-up ใช้ O(log n)`);
+            },
+          },
+          {
+            l: "Extract min",
+            f: async () => {
+              const a = S.heap;
+              if (!a.length) return say("ฮีปว่าง");
+              const m = a[0],
+                x = a.pop();
+              if (!a.length) {
+                R.heap();
+                say(`ดึง ${m} ออกแล้ว`);
+                return;
+              }
+              a[0] = x;
+              let i = 0;
+              R.heap(0);
+              say(`ลบค่าน้อยสุด ${m} แล้ว; ย้ายตัวสุดท้าย ${x} ไปที่ root`);
+              await delay();
+              for (;;) {
+                const l = 2 * i + 1,
+                  r = l + 1;
+                let s2 = i;
+                if (l < a.length && a[l] < a[s2]) s2 = l;
+                if (r < a.length && a[r] < a[s2]) s2 = r;
+                R.heap([i, l, r].filter((k) => k < a.length));
+                say(
+                  s2 === i
+                    ? "child ทั้งสองใหญ่กว่า → หยุดเลื่อนลง"
+                    : `สลับ ${a[i]} กับลูกที่เล็กกว่า ${a[s2]}`,
+                );
+                await delay();
+                if (s2 === i) break;
+                sw(a, s2, i);
+                i = s2;
+              }
+              R.heap(i);
+              say(`ดึง ${m} ออกแล้ว: sift-down ใช้ O(log n)`);
+            },
+          },
+          {
+            l: "Peek",
+            f: async () => {
+              if (!S.heap.length) return say("ฮีปว่าง");
+              R.heap(0);
+              say(`ค่าน้อยสุดคือ ${S.heap[0]}: O(1)`);
+            },
+          },
+        ],
+        avl: [
+          { l: "แทรก", f: avlAdd },
+          {
+            l: "Demo 10·20·30",
+            f: async () => {
+              for (const v of [10, 20, 30]) await avlAdd(v);
+            },
+          },
+        ],
+        btree: [
+          { l: "แทรก", f: btAdd },
+          { l: "ค้นหา", n: 1, f: btSearch },
+        ],
+        trie: [
+          {
+            l: "เพิ่มคำ",
+            f: async (v) => {
+              const w = tw(v);
+              if (!w) return say("พิมพ์ตัวอักษร a–z");
+              let o = S.trie,
+                p = "";
+              for (const c of w) {
+                p += c;
+                o = o[c] ??= {};
+                R.trie([p]);
+                say(`ไปตามกิ่ง หรือสร้างกิ่งใหม่ '${c}' (prefix ${p})`);
+                await delay();
+              }
+              o.$ = 1;
+              R.trie([], p);
+              say(`ทำเครื่องหมายว่า ${w} เป็นคำที่จบสมบูรณ์ (วงกลมหนา): O(L)`);
+            },
+          },
+          {
+            l: "ค้นหาคำ",
+            n: 1,
+            f: async (v) => {
+              const w = tw(v);
+              if (!w) return say("พิมพ์ตัวอักษร a–z");
+              let o = S.trie,
+                p = "";
+              for (const c of w) {
+                if (!o[c]) {
+                  R.trie();
+                  say(`ไม่มีกิ่ง '${c}' หลัง prefix '${p}' → ไม่พบ`);
+                  return;
+                }
+                p += c;
+                o = o[c];
+                R.trie([p]);
+                say(`ไปตามกิ่ง '${c}'`);
+                await delay();
+              }
+              R.trie([], o.$ ? p : null);
+              say(
+                o.$ ? `พบคำว่า ${w}` : `${w} เป็นแค่ prefix ไม่ใช่คำที่เก็บไว้`,
+              );
+            },
+          },
+          {
+            l: "คำที่ขึ้นต้นด้วย",
+            n: 1,
+            f: async (v) => {
+              const w = tw(v);
+              if (!w) return say("พิมพ์ตัวอักษร a–z");
+              let o = S.trie,
+                p = "";
+              for (const c of w) {
+                if (!o[c]) {
+                  R.trie();
+                  say(`ไม่มีคำที่ขึ้นต้นด้วย ${w}`);
+                  return;
+                }
+                p += c;
+                o = o[c];
+                R.trie([p]);
+                await fd();
+              }
+              const out = [];
+              (function g(n, s2) {
+                if (n.$) out.push(s2);
+                Object.keys(n)
+                  .filter((k) => k !== "$")
+                  .sort()
+                  .forEach((k) => g(n[k], s2 + k));
+              })(o, p);
+              say(`คำที่ขึ้นต้นด้วย ${w}: ${out.join(", ") || "ไม่มี"}`);
+            },
+          },
+        ],
+        segtree: [
+          {
+            l: "หาผลรวม [0..i]",
+            n: 1,
+            f: async (v) => {
+              const r = Math.min(v, 7),
+                t = segT(),
+                L = [];
+              (function q(i, l, rr) {
+                if (l > r) return;
+                if (rr <= r) {
+                  L.push(i);
+                  return;
+                }
+                const m = (l + rr) >> 1;
+                q(2 * i, l, m);
+                q(2 * i + 1, m + 1, rr);
+              })(1, 0, 7);
+              let acc = 0;
+              for (let k = 0; k < L.length; k++) {
+                acc += t[L[k]];
+                R.segtree(L.slice(0, k + 1));
+                say(`ใช้โหนด ${L[k]} (ผลรวม ${t[L[k]]}) ผลรวมสะสม ${acc}`);
+                await delay();
+              }
+              say(`sum[0..${r}] = ${acc} ใช้แค่ ${L.length} โหนด: O(log n)`);
+            },
+          },
+          {
+            l: "อัปเดต a[i] += 5",
+            n: 1,
+            f: async (v) => {
+              const i = v % 8,
+                path = [];
+              for (let k = 8 + i; k >= 1; k >>= 1) path.push(k);
+              S.seg[i] += 5;
+              for (let k = 0; k < path.length; k++) {
+                R.segtree(path.slice(0, k + 1));
+                say(
+                  k
+                    ? `คำนวณโหนดด้านบน (ancestor) ${path[k]} ใหม่`
+                    : `ใบ a[${i}] กลายเป็น ${S.seg[i]}`,
+                );
+                await delay();
+              }
+              say(`อัปเดตแค่ ${path.length} โหนด: O(log n)`);
+            },
+          },
+        ],
+        graph: [
+          { l: "BFS จากโหนด", f: async (v) => trav(v % 7, true) },
+          { l: "DFS จากโหนด", f: async (v) => trav(v % 7, false) },
+        ],
+        sp: [
+          { l: "Dijkstra จากโหนด", f: async (v) => dijk(v % 7) },
+          { l: "Prim MST จากโหนด", f: async (v) => prim(v % 7) },
+        ],
+        dsu: [
+          {
+            l: "Union (a b)",
+            f: async (v) => {
+              const [a, b] = two(v),
+                ra = dfind(a).at(-1),
+                rb = dfind(b).at(-1);
+              R.dsu([a, b]);
+              say(`union(${a}, ${b}): หา root → ${ra} และ ${rb}`);
+              await delay();
+              if (ra === rb) return say("อยู่ในเซตเดียวกันแล้ว ไม่ต้องทำอะไร");
+              const sz = (r) =>
+                  S.dsu.filter((_, i) => dfind(i).at(-1) === r).length,
+                [big, sm] = sz(ra) >= sz(rb) ? [ra, rb] : [rb, ra];
+              S.dsu[sm] = big;
+              R.dsu([big]);
+              say(`Union by size: root ${sm} ชี้ไปที่ root ${big}`);
+            },
+          },
+          {
+            l: "Find (x)",
+            n: 1,
+            f: async (v) => {
+              const x = two(v)[0],
+                p = dfind(x),
+                r = p.at(-1);
+              R.dsu(p);
+              say(`find(${x}): เส้นทาง ${p.join(" → ")} (root ${r})`);
+              await delay();
+              p.forEach((k) => {
+                S.dsu[k] = r;
+              });
+              R.dsu(p);
+              say(`Path compression: ทุกโหนดบนเส้นทางชี้ตรงไปที่ ${r}`);
+            },
+          },
+        ],
+        sort: [
+          sortOp("Bubble", bub, "Bubble sort, O(n²)"),
+          sortOp("Selection", sel, "Selection sort, O(n²)"),
+          sortOp("Insertion", ins, "Insertion sort, O(n²)"),
+          sortOp("Quick", qs, "Quick sort, O(n log n) avg"),
+          sortOp("Merge", ms, "Merge sort, O(n log n)"),
+          {
+            l: "สุ่มใหม่",
+            f: async () => {
+              S.sort = Array.from({ length: 10 }, () => RI(90));
+              R.sort();
+              say("สุ่มข้อมูลใหม่แล้ว: เลือกอัลกอริทึมการเรียง");
+            },
+          },
+        ],
+        search: [
+          {
+            l: "ค้นแบบเชิงเส้น",
+            n: 1,
+            f: async (v) => {
+              const a = S.search;
+              for (let i = 0; i < a.length; i++) {
+                R.search(i);
+                say(
+                  `ตรวจ a[${i}] = ${a[i]}${a[i] === v ? " — เจอแล้ว!" : " ≠ " + v}`,
+                );
+                await delay();
+                if (a[i] === v) {
+                  R.search(i, 0, 99, i);
+                  return;
+                }
+              }
+              say(`ไม่พบ ${v} หลังตรวจ ${a.length} ครั้ง: O(n)`);
+            },
+          },
+          {
+            l: "ค้นแบบ Binary",
+            n: 1,
+            f: async (v) => {
+              const a = S.search;
+              let lo = 0,
+                hi = a.length - 1,
+                steps = 0;
+              while (lo <= hi) {
+                const mid = (lo + hi) >> 1;
+                steps++;
+                R.search(mid, lo, hi);
+                say(
+                  `lo=${lo}, hi=${hi}, mid=${mid}: a[mid]=${a[mid]} ${a[mid] === v ? "=" : a[mid] < v ? "<" : ">"} ${v}${a[mid] === v ? "" : a[mid] < v ? " → ค้นครึ่งขวา" : " → ค้นครึ่งซ้าย"}`,
+                );
+                await delay();
+                if (a[mid] === v) {
+                  R.search(mid, lo, hi, mid);
+                  say(`พบที่ index ${mid} หลัง ${steps} ขั้นตอน: O(log n)`);
+                  return;
+                }
+                if (a[mid] < v) lo = mid + 1;
+                else hi = mid - 1;
+              }
+              R.search(-1, 1, 0);
+              say(`ไม่พบ ${v} หลัง ${steps} ขั้นตอน`);
+            },
+          },
+        ],
+        adv: [
+          {
+            l: "LRU put",
+            f: async (v) => {
+              const l = S.adv.l,
+                i = l.indexOf(v);
+              if (i >= 0) {
+                R.adv(i);
+                say(`${v} อยู่ในแคชแล้ว → ย้ายไปหน้าสุด`);
+                await delay();
+                l.splice(i, 1);
+              } else if (l.length >= 4) {
+                R.adv(3);
+                say(
+                  `แคชเต็ม → ลบ (evict) ตัวที่ไม่ได้ใช้มานานที่สุด (${l[3]})`,
+                );
+                await delay();
+                l.pop();
+              }
+              l.unshift(v);
+              R.adv(-1, 0);
+              say(`${v} เป็นตัวที่ใช้ล่าสุดแล้ว`);
+            },
+          },
+          {
+            l: "LRU get",
+            n: 1,
+            f: async (v) => {
+              const l = S.adv.l,
+                i = l.indexOf(v);
+              if (i < 0) {
+                R.adv();
+                say(`Miss: ไม่มี ${v} ในแคช`);
+                return;
+              }
+              R.adv(i);
+              say(`Hit! เจอ ${v} → ย้ายไปหน้าสุด`);
+              await delay();
+              l.splice(i, 1);
+              l.unshift(v);
+              R.adv(-1, 0);
+              say(`${v} เป็นตัวที่ใช้ล่าสุด: O(1) ด้วย hash map + linked list`);
+            },
+          },
+          {
+            l: "Bloom add",
+            f: async (v) => {
+              const p = bh(v);
+              R.adv(-1, -1, p);
+              say(`แฮช ${v} → บิต ${p.join(", ")}; ตั้งเป็น 1`);
+              await delay();
+              p.forEach((k) => {
+                S.adv.b[k] = 1;
+              });
+              R.adv();
+              say(`เพิ่ม ${v} ลง Bloom filter แล้ว`);
+            },
+          },
+          {
+            l: "Bloom check",
+            n: 1,
+            f: async (v) => {
+              const p = bh(v),
+                b = S.adv.b;
+              R.adv(-1, -1, p);
+              say(
+                `บิต ${p.join(", ")} → ${p.every((k) => b[k]) ? "เป็น 1 ทั้งหมด: อาจมีอยู่ (อาจเป็น false positive)" : "เจอ 0: ไม่มีแน่นอน"}`,
+              );
+            },
+          },
+        ],
+      });
+
+      const PK = {
+        list: () => S.list,
+        hash: () => S.hash.flat(),
+        search: () => S.search,
+        adv: () => S.adv.l,
+        segtree: () => [0, 1, 2, 3, 4, 5, 6, 7],
+        bigo: () => [8, 16, 64, 256, 1024],
+        trie: () => W,
+        dsu: () => [0, 1, 2, 3, 4, 5, 6, 7],
+        array: () => S.array.a.map((_, i) => i),
+        btree: () => {
+          const o = [];
+          (function g(n) {
+            o.push(...n.k);
+            if (!n.leaf) n.c.forEach(g);
+          })(S.btree);
+          return o;
+        },
+        bst: () => {
+          const o = [];
+          (function g(n) {
+            if (n) {
+              g(n.l);
+              o.push(n.v);
+              g(n.r);
+            }
+          })(S.bst);
+          return o;
+        },
+      };
+      R.dsu = (hl = []) => {
+        const p = S.dsu,
+          H = [].concat(hl),
+          ch = p.map(() => []),
+          ns = {};
+        p.forEach((q, i) => {
+          if (q !== i) ch[q].push(i);
+        });
+        let k = 0,
+          md = 0;
+        const g = (u, d) => {
+          md = Math.max(md, d);
+          ch[u].forEach((c) => g(c, d + 1));
+          ns[u] = {
+            y: d * 60 + 26,
+            x: ch[u].length
+              ? ch[u].reduce((s, c) => s + ns[c].x, 0) / ch[u].length
+              : k++ * 46 + 26,
+          };
+        };
+        p.forEach((q, i) => {
+          if (q === i) g(i, 0);
+        });
+        st(
+          `<div><svg width="${k * 46 + 10}" height="${md * 60 + 60}">${p.map((q, i) => (q !== i ? `<line x1="${ns[i].x}" y1="${ns[i].y}" x2="${ns[q].x}" y2="${ns[q].y}"/>` : "")).join("")}${p.map((q, i) => `<g class="tn ${H.includes(i) ? "hi" : ""}"><circle cx="${ns[i].x}" cy="${ns[i].y}" r="18" ${q === i ? 'style="stroke-width:5"' : ""}/><text x="${ns[i].x}" y="${ns[i].y}" dy=".35em">${i}</text></g>`).join("")}</svg><p class="arr">parent[] = [${p.join(", ")}] (วงหนา = root)</p></div>`,
+        );
+      };
+      async function run(i) {
+        if (busy) return;
+        const op = OPS[cur][i],
+          raw = $("#val").value;
+        let pk = null;
+        if (op.n && raw === "") {
+          const c = PK[cur] && PK[cur]();
+          if (!c || !c.length) {
+            say("ยังไม่มีข้อมูลให้เลือก ลองเพิ่มข้อมูลก่อน");
+            return;
+          }
+          pk = c[Math.floor(Math.random() * c.length)];
+        }
+        const v =
+          pk !== null
+            ? pk
+            : raw === ""
+              ? 10 + Math.floor(Math.random() * 90)
+              : raw.trim() !== "" && !isNaN(+raw)
+                ? +raw
+                : raw;
+        if (typeof v === "string" && !["trie", "dsu"].includes(cur)) {
+          say("หัวข้อนี้ใช้ได้เฉพาะตัวเลข");
+          return;
+        }
+        busy = true;
+        lock(true);
+        await op.f(v);
+        busy = false;
+        lock(false);
+        if (!done.includes(cur)) {
+          done.push(cur);
+          sv("dsl", done);
+          const ic = document.querySelector(".nv.on i"),
+            pr = $("#prog"),
+            dn = $("#dn");
+          if (ic) ic.textContent = "✓";
+          if (pr)
+            pr.textContent = `ลองจำลองแล้ว ${done.length}/${Object.keys(T).length} หัวข้อ`;
+          if (dn) {
+            dn.className = "ok";
+            dn.textContent = "✓ ลองแล้ว";
+          }
+        }
+      }
+      function lock(b) {
+        document
+          .querySelectorAll(".ctl button")
+          .forEach((x) => (x.disabled = b));
+      }
+
+      function quiz() {
+        const t = T[cur];
+        return (
+          t.quiz
+            .map(
+              (q, qi) =>
+                `<div class="q"><b>${qi + 1}. ${q[0]}</b><div class="opts">${q[1]
+                  .map((o, oi) => {
+                    const s = qa[qi];
+                    return `<button data-q="${qi}" data-o="${oi}" class="${s === undefined ? "" : oi === q[2] ? "ok" : oi === s ? "bad" : ""}" ${s !== undefined ? "disabled" : ""}>${o}</button>`;
+                  })
+                  .join("")}</div></div>`,
+            )
+            .join("") +
+          `<p class="cap">คะแนน: ${Object.keys(qa).filter((k) => qa[k] === t.quiz[k][2]).length}/${t.quiz.length}</p>`
+        );
+      }
+      function panel() {
+        const t = T[cur],
+          p = $("#pn");
+        if (tab === "learn")
+          p.innerHTML = `<div class="what"><b>📌 คืออะไร?</b><p>${t.what}</p></div><h3>รายละเอียดสำคัญ</h3><p>${t.learn}</p><h3>ความซับซ้อนเวลา</h3><table><tr><th>การทำงาน</th><th>เวลา</th></tr>${t.cx.map((r) => `<tr><td style="color:inherit;font-weight:400">${r[0]}</td><td>${r[1]}</td></tr>`).join("")}</table><h3>นำไปใช้ที่ไหนบ้าง</h3><p>${t.uses}</p>`;
+        else if (tab === "viz") {
+          p.innerHTML = `<div class="ctl"><input id="val" placeholder="ค่า" maxlength="9" size="9">${OPS[cur].map((o, i) => `<button data-i="${i}">${o.l}</button>`).join("")}<button data-r class="ghost">รีเซ็ต</button></div><div class="sp">ความเร็ว <input id="sp" type="range" min="1" max="10" value="${sp}"> <button id="ps" class="ghost">⏸ หยุดชั่วคราว</button> <label><input type="checkbox" id="sm" ${stepMode ? "checked" : ""}> โหมดทีละขั้น</label> <button id="nx" class="ghost" ${stepMode ? "" : "disabled"}>⏭ ขั้นต่อไป</button></div><div id="stage" class="stage ${cur}"></div><p id="cap" class="cap">เว้นช่องไว้ก็ได้ ระบบจะสุ่มค่าให้ (ปุ่มค้นหา/ลบจะสุ่มจากค่าที่มีอยู่) แล้วกดปุ่มการทำงานด้านบน</p><div id="log" class="log"></div>`;
+          p.querySelectorAll("[data-i]").forEach(
+            (b) => (b.onclick = () => run(+b.dataset.i)),
+          );
+          p.querySelector("[data-r]").onclick = () => {
+            if (busy) return;
+            init();
+            draw();
+            say("รีเซ็ตเป็นข้อมูลเริ่มต้นแล้ว");
+          };
+          $("#sp").oninput = (e) => {
+            sp = +e.target.value;
+          };
+          paused = false;
+          $("#ps").onclick = (e) => {
+            paused = !paused;
+            e.target.textContent = paused ? "▶ เล่นต่อ" : "⏸ หยุดชั่วคราว";
+          };
+          $("#sm").onchange = (e) => {
+            stepMode = e.target.checked;
+            $("#nx").disabled = !stepMode;
+            if (!stepMode && stepRes) {
+              stepRes();
+              stepRes = null;
+            }
+          };
+          $("#nx").onclick = () => {
+            if (stepRes) {
+              stepRes();
+              stepRes = null;
+            }
+          };
+          $("#val").onkeydown = (e) => {
+            if (e.key === "Enter") run(0);
+          };
+          draw();
+        } else if (tab === "code") p.innerHTML = `<pre>${esc(t.code)}</pre>`;
+        else {
+          p.innerHTML = quiz();
+          p.querySelectorAll("[data-q]").forEach(
+            (b) =>
+              (b.onclick = () => {
+                qa[b.dataset.q] = +b.dataset.o;
+                panel();
+              }),
+          );
+        }
+      }
+      function render() {
+        const t = T[cur];
+        $("#nav").innerHTML = Object.entries(GROUPS)
+          .map(
+            ([g, ks]) =>
+              `<div class="gh">${g}</div>` +
+              ks
+                .map(
+                  (k) =>
+                    `<button class="nv ${k === cur ? "on" : ""}" data-k="${k}">${T[k].ic} ${T[k].n}<i>${done.includes(k) ? "✓" : ""}</i></button>`,
+                )
+                .join(""),
+          )
+          .join("");
+        $("#prog").textContent =
+          `ลองจำลองแล้ว ${done.length}/${Object.keys(T).length} หัวข้อ`;
+        document.querySelectorAll(".nv").forEach(
+          (b) =>
+            (b.onclick = () => {
+              if (busy) return;
+              cur = b.dataset.k;
+              tab = "viz";
+              qa = {};
+              render();
+            }),
+        );
+        const tn = {
+          viz: "🎬 จำลองการทำงาน",
+          learn: "📖 ทฤษฎีย่อ",
+          code: "💻 โค้ด",
+          quiz: "❓ ทดสอบความเข้าใจ",
+        };
+        $("#main").innerHTML =
+          `<div class="hd"><h2>${t.ic} ${t.n}</h2><button id="dn" class="${done.includes(cur) ? "ok" : ""}">${done.includes(cur) ? "✓ ลองแล้ว" : "ทำเครื่องหมายว่าลองแล้ว"}</button></div><div class="tabs">${Object.keys(
+            tn,
+          )
+            .filter((k) => k !== "viz" || OPS[cur])
+            .map(
+              (k) =>
+                `<button data-t="${k}" class="${k === tab ? "on" : ""}">${tn[k]}</button>`,
+            )
+            .join("")}</div><section class="pn" id="pn"></section>`;
+        $("#dn").onclick = () => {
+          done = done.includes(cur)
+            ? done.filter((x) => x !== cur)
+            : [...done, cur];
+          sv("dsl", done);
+          render();
+        };
+        document.querySelectorAll("[data-t]").forEach(
+          (b) =>
+            (b.onclick = () => {
+              if (busy) return;
+              tab = b.dataset.t;
+              render();
+            }),
+        );
+        panel();
+      }
+      render();
+    </script>
+  </body>
+</html>
